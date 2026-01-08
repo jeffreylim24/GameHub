@@ -5,7 +5,8 @@ import "strings"
 // Checks if a title is valid
 // Returns an error message if invalid, empty string if valid
 func ValidateTopicTitle(title string) string {
-	if strings.TrimSpace(title) == "" {
+	title = strings.TrimSpace(title)
+	if len(title) == 0 {
 		return ErrTopicTitleRequired
 	}
 	if len(title) < TopicTitleMinLength {
@@ -21,6 +22,7 @@ func ValidateTopicTitle(title string) string {
 // Checks if a description is valid
 // Returns an error message if invalid, empty string if valid
 func ValidateTopicDescription(description string) string {
+	description = strings.TrimSpace(description)
 	if len(description) > TopicDescriptionMaxLength {
 		return ErrTopicDescriptionMaxLength
 	}

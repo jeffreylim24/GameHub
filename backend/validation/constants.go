@@ -51,10 +51,10 @@ var (
 )
 
 // Allowed post categories
-var AllowedPostCategories = []string{"Discussion", "Question", "Review", "Highlight"}
+var AllowedPostCategories = []string{"", "Discussion", "Question", "Review", "Highlight"}
 
 // Allowed post platforms
-var AllowedPostPlatforms = []string{"PC", "PlayStation", "Xbox", "Nintendo Switch"}
+var AllowedPostPlatforms = []string{"", "PC", "PlayStation", "Xbox", "Nintendo Switch"}
 
 // Comment validation constants
 const (

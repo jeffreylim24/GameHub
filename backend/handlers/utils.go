@@ -18,3 +18,8 @@ func RespondWithJSON(w http.ResponseWriter, statusCode int, payload interface{})
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(payload)
 }
+
+// Sends a 204 No Content response
+func RespondWithNoContent(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusNoContent)
+}

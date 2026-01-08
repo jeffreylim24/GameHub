@@ -2,6 +2,8 @@ package routes
 
 import (
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -9,6 +11,32 @@ import (
 	"github.com/jeffreylim24/GameHub/handlers"
 	"gorm.io/gorm"
 )
+
+// Retrieves and parses the CORS_ALLOWED_ORIGINS environment variable.
+// Returns a slice of allowed origins. Supports comma-separated values.
+// Falls back to "http://localhost:5173" if the environment variable is empty or not set.
+func getCORSAllowedOrigins() []string {
+	originsEnv := os.Getenv("CORS_ALLOWED_ORIGINS")
+
+	if originsEnv == "" {
+		return []string{"http://localhost:5173"}
+	}
+
+	origins := strings.Split(originsEnv, ",")
+	var trimmedOrigins []string
+	for _, origin := range origins {
+		trimmed := strings.TrimSpace(origin)
+		if trimmed != "" {
+			trimmedOrigins = append(trimmedOrigins, trimmed)
+		}
+	}
+
+	if len(trimmedOrigins) == 0 {
+		return []string{"http://localhost:5173"}
+	}
+
+	return trimmedOrigins
+}
 
 // Sets up the router with all routes and middleware
 func SetupRouter(db *gorm.DB) http.Handler {
@@ -18,7 +46,7 @@ func SetupRouter(db *gorm.DB) http.Handler {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RequestID)
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:5173"}, // For development purposes only, adjust port in production
+		AllowedOrigins:   getCORSAllowedOrigins(),
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},

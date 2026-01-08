@@ -204,5 +204,5 @@ func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	RespondWithJSON(w, http.StatusNoContent, nil)
+	RespondWithNoContent(w)
 }

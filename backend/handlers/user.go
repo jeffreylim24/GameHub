@@ -147,5 +147,5 @@ func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	RespondWithJSON(w, http.StatusNoContent, nil)
+	RespondWithNoContent(w)
 }

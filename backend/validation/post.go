@@ -37,6 +37,7 @@ func ValidatePostContent(content string) string {
 // Validates the post category against allowed categories
 // Returns an error message if invalid, empty string if valid
 func ValidatePostCategory(category string) string {
+	category = strings.TrimSpace(category)
 	for _, c := range AllowedPostCategories {
 		if strings.EqualFold(c, category) {
 			return ""
@@ -48,6 +49,7 @@ func ValidatePostCategory(category string) string {
 // Validates the post platform against allowed platforms
 // Returns an error message if invalid, empty string if valid
 func ValidatePostPlatform(platform string) string {
+	platform = strings.TrimSpace(platform)
 	for _, p := range AllowedPostPlatforms {
 		if strings.EqualFold(p, platform) {
 			return ""
