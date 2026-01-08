@@ -139,13 +139,17 @@ func (h *CommentHandler) UpdateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if errMsg := validation.ValidateCommentContent(updateData.Content); errMsg != "" {
-		RespondWithError(w, http.StatusBadRequest, errMsg)
-		return
+	if existingComment.Content != updateData.Content {
+		if errMsg := validation.ValidateCommentContent(updateData.Content); errMsg != "" {
+			RespondWithError(w, http.StatusBadRequest, errMsg)
+			return
+		}
+		existingComment.Content = updateData.Content
 	}
 
-	existingComment.Content = updateData.Content
-	existingComment.HasSpoilers = updateData.HasSpoilers
+	if existingComment.HasSpoilers != updateData.HasSpoilers {
+		existingComment.HasSpoilers = updateData.HasSpoilers
+	}
 
 	result = h.db.Save(&existingComment)
 	if result.Error != nil {
