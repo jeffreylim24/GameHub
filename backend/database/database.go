@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// getEnv retrieves an environment variable or returns a fallback value
+// Retrieves an environment variable or returns a fallback value
 func getEnv(key, fallback string) string {
 	if value := os.Getenv(key); value != "" {
 		return value
@@ -20,14 +20,11 @@ func getEnv(key, fallback string) string {
 
 // Establishes a connection to the PostgreSQL database
 func Connect() *gorm.DB {
-	// Load .env file into system environment variables
-	// After this, all values from .env are accessible via os.Getenv()
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("Warning: .env file not found, using system environment variables")
 	}
 
-	// Read environment variables (from .env or system) with fallbacks
 	host := getEnv("DB_HOST", "localhost")
 	user := getEnv("DB_USER", "gamehub_user")
 	password := os.Getenv("DB_PASSWORD") // No fallback for security
@@ -36,7 +33,6 @@ func Connect() *gorm.DB {
 	sslmode := getEnv("DB_SSLMODE", "disable")
 	timezone := getEnv("DB_TZ", "Asia/Singapore")
 
-	// Fail fast if password is not provided
 	if password == "" {
 		log.Fatal("DB_PASSWORD environment variable is required")
 	}
