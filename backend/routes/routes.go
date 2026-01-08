@@ -1,0 +1,65 @@
+package routes
+
+import (
+	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
+	"github.com/jeffreylim24/GameHub/handlers"
+	"gorm.io/gorm"
+)
+
+// Sets up the router with all routes and middleware
+func SetupRouter(db *gorm.DB) http.Handler {
+	r := chi.NewRouter()
+
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.RequestID)
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:5173"}, // For development purposes only, adjust port in production
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	}))
+
+	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
+		handlers.RespondWithJSON(w, http.StatusOK, map[string]string{"status": "ok"})
+	})
+
+	userHandler := handlers.NewUserHandler(db)
+	topicHandler := handlers.NewTopicHandler(db)
+	postHandler := handlers.NewPostHandler(db)
+	commentHandler := handlers.NewCommentHandler(db)
+
+	r.Route("/api", func(r chi.Router) {
+		r.Post("/users", userHandler.CreateUser)
+		r.Get("/users", userHandler.GetUsers)
+		r.Get("/users/{id}", userHandler.GetUser)
+		r.Put("/users/{id}", userHandler.UpdateUser)
+		r.Delete("/users/{id}", userHandler.DeleteUser)
+
+		r.Post("/topics", topicHandler.CreateTopic)
+		r.Get("/topics", topicHandler.GetTopics)
+		r.Get("/topics/{id}", topicHandler.GetTopic)
+		r.Put("/topics/{id}", topicHandler.UpdateTopic)
+		r.Delete("/topics/{id}", topicHandler.DeleteTopic)
+
+		r.Post("/posts", postHandler.CreatePost)
+		r.Get("/posts", postHandler.GetPosts)
+		r.Get("/posts/{id}", postHandler.GetPost)
+		r.Put("/posts/{id}", postHandler.UpdatePost)
+		r.Delete("/posts/{id}", postHandler.DeletePost)
+
+		r.Post("/comments", commentHandler.CreateComment)
+		r.Get("/comments", commentHandler.GetComments)
+		r.Get("/comments/{id}", commentHandler.GetComment)
+		r.Put("/comments/{id}", commentHandler.UpdateComment)
+		r.Delete("/comments/{id}", commentHandler.DeleteComment)
+	})
+
+	return r
+}

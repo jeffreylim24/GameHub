@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// Establishes a connection to the PostgreSQL database
 func Connect() *gorm.DB {
 	dsn := "host=localhost user=gamehub_user password=gamehub555 dbname=gamehub port=5432 sslmode=disable TimeZone=Asia/Singapore"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -18,6 +19,7 @@ func Connect() *gorm.DB {
 	return db
 }
 
+// Migrates the provided models to the database
 func Migrate(db *gorm.DB, models ...interface{}) {
 	for _, model := range models {
 		log.Printf("Migrating: %T", model)
