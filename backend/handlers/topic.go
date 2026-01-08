@@ -39,6 +39,11 @@ func (h *TopicHandler) CreateTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if validation.IsIDZero(topic.CreatedBy) {
+		RespondWithError(w, http.StatusBadRequest, validation.ErrUserIDRequired)
+		return
+	}
+
 	var creator models.User
 	if err := h.db.First(&creator, topic.CreatedBy).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {

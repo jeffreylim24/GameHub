@@ -12,3 +12,8 @@ func IsUniqueConstraintError(err error) bool {
 		strings.Contains(errMsg, "UNIQUE constraint failed") ||
 		strings.Contains(errMsg, "violates unique constraint")
 }
+
+// Checks if the given ID is zero (invalid/unset)
+func IsIDZero(id uint) bool {
+	return id == 0
+}

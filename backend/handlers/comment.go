@@ -34,6 +34,11 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if validation.IsIDZero(comment.AuthorID) {
+		RespondWithError(w, http.StatusBadRequest, validation.ErrUserIDRequired)
+		return
+	}
+
 	var author models.User
 	if err := h.db.First(&author, comment.AuthorID).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -43,6 +48,11 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("Database error in CreateComment (checking author): %v", err)
 		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+		return
+	}
+
+	if validation.IsIDZero(comment.PostID) {
+		RespondWithError(w, http.StatusBadRequest, validation.ErrPostIDRequired)
 		return
 	}
 

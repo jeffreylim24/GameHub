@@ -49,6 +49,11 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if validation.IsIDZero(post.AuthorID) {
+		RespondWithError(w, http.StatusBadRequest, validation.ErrUserIDRequired)
+		return
+	}
+
 	var author models.User
 	if err := h.db.First(&author, post.AuthorID).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -58,6 +63,11 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("Database error in CreatePost (checking author): %v", err)
 		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+		return
+	}
+
+	if validation.IsIDZero(post.TopicID) {
+		RespondWithError(w, http.StatusBadRequest, validation.ErrTopicIDRequired)
 		return
 	}
 

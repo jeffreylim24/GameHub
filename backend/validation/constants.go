@@ -66,3 +66,11 @@ var (
 	ErrCommentContentRequired  = "Comment content cannot be empty."
 	ErrCommentContentMaxLength = fmt.Sprintf("Comment content cannot exceed %d characters.", CommentContentMaxLength)
 )
+
+// ID validation error messages
+var (
+	ErrUserIDRequired    = "User ID is required"
+	ErrTopicIDRequired   = "Topic ID is required"
+	ErrPostIDRequired    = "Post ID is required"
+	ErrCommentIDRequired = "Comment ID is required"
+)
