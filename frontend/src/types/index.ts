@@ -29,8 +29,8 @@ export interface Post {
   author_id: number | null;
   title: string;
   content: string;
-  category: PostCategory | '';
-  platform: PostPlatform | '';
+  category?: PostCategory;
+  platform?: PostPlatform;
   has_spoilers: boolean;
   topic?: Topic;
   author?: User;
