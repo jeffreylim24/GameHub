@@ -15,5 +15,5 @@ type Topic struct {
 	UpdatedAt   time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 
 	// Relationships (belongs to)
-	Creator User `gorm:"foreignKey:CreatedBy;references:UserID" json:"creator"`
+	Creator User `gorm:"foreignKey:CreatedBy;references:UserID;constraint:-" json:"creator,omitempty"`
 }

@@ -19,6 +19,6 @@ type Post struct {
 	UpdatedAt   time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 
 	// Relationships (belongs to)
-	Topic  Topic `json:"topic"`
-	Author User  `gorm:"foreignKey:AuthorID" json:"author"`
+	Topic  Topic `gorm:"constraint:OnDelete:CASCADE" json:"topic"`
+	Author User  `gorm:"foreignKey:AuthorID;constraint:-" json:"author,omitempty"`
 }

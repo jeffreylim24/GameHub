@@ -15,6 +15,6 @@ type Comment struct {
 	UpdatedAt   time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 
 	// Relationships (belongs to)
-	Post   Post `json:"post"`
-	Author User `json:"author"`
+	Post   Post `gorm:"constraint:OnDelete:CASCADE" json:"post"`
+	Author User `gorm:"constraint:-" json:"author,omitempty"`
 }

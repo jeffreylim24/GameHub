@@ -132,18 +132,59 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // Deletes a user by ID
+// Sets all user's content to CreatedBy/AuthorID = 0 before deletion
 func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	userID := chi.URLParam(r, "id")
 
-	result := h.db.Delete(&models.User{}, userID)
-	if result.Error != nil {
-		log.Printf("Database error in DeleteUser: %v", result.Error)
+	var user models.User
+	if err := h.db.First(&user, userID).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			RespondWithError(w, http.StatusNotFound, ErrUserNotFound)
+			return
+		}
+		log.Printf("Database error in DeleteUser (checking user): %v", err)
 		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
 		return
 	}
 
-	if result.RowsAffected == 0 {
-		RespondWithError(w, http.StatusNotFound, ErrUserNotFound)
+	tx := h.db.Begin()
+	if tx.Error != nil {
+		log.Printf("Database error in DeleteUser (starting transaction): %v", tx.Error)
+		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+		return
+	}
+
+	if err := tx.Model(&models.Topic{}).Where("created_by = ?", userID).Update("created_by", 0).Error; err != nil {
+		tx.Rollback()
+		log.Printf("Database error in DeleteUser (updating topics): %v", err)
+		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+		return
+	}
+
+	if err := tx.Model(&models.Post{}).Where("author_id = ?", userID).Update("author_id", 0).Error; err != nil {
+		tx.Rollback()
+		log.Printf("Database error in DeleteUser (updating posts): %v", err)
+		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+		return
+	}
+
+	if err := tx.Model(&models.Comment{}).Where("author_id = ?", userID).Update("author_id", 0).Error; err != nil {
+		tx.Rollback()
+		log.Printf("Database error in DeleteUser (updating comments): %v", err)
+		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+		return
+	}
+
+	if err := tx.Delete(&models.User{}, userID).Error; err != nil {
+		tx.Rollback()
+		log.Printf("Database error in DeleteUser (deleting user): %v", err)
+		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+		return
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		log.Printf("Database error in DeleteUser (committing transaction): %v", err)
+		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
 		return
 	}
 
