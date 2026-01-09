@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 
@@ -49,14 +50,14 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if validation.IsIDZero(post.AuthorID) {
+	if validation.IsNullableIDInvalid(post.AuthorID) {
 		RespondWithError(w, http.StatusBadRequest, validation.ErrUserIDRequired)
 		return
 	}
 
 	var author models.User
-	if err := h.db.First(&author, post.AuthorID).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
+	if err := h.db.First(&author, *post.AuthorID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			RespondWithError(w, http.StatusBadRequest, ErrCreatorNotExist)
 			return
 		}
@@ -73,7 +74,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	var topic models.Topic
 	if err := h.db.First(&topic, post.TopicID).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			RespondWithError(w, http.StatusBadRequest, ErrTopicNotFound)
 			return
 		}
@@ -114,7 +115,7 @@ func (h *PostHandler) GetPost(w http.ResponseWriter, r *http.Request) {
 
 	result := h.db.First(&post, postID)
 	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			RespondWithError(w, http.StatusNotFound, ErrPostNotFound)
 			return
 		}
@@ -133,7 +134,7 @@ func (h *PostHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	var existingPost models.Post
 	result := h.db.First(&existingPost, postID)
 	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			RespondWithError(w, http.StatusNotFound, ErrPostNotFound)
 			return
 		}

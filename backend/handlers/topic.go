@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 
@@ -39,14 +40,14 @@ func (h *TopicHandler) CreateTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if validation.IsIDZero(topic.CreatedBy) {
+	if validation.IsNullableIDInvalid(topic.CreatedBy) {
 		RespondWithError(w, http.StatusBadRequest, validation.ErrUserIDRequired)
 		return
 	}
 
 	var creator models.User
-	if err := h.db.First(&creator, topic.CreatedBy).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
+	if err := h.db.First(&creator, *topic.CreatedBy).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			RespondWithError(w, http.StatusBadRequest, ErrCreatorNotExist)
 			return
 		}
@@ -86,7 +87,7 @@ func (h *TopicHandler) GetTopic(w http.ResponseWriter, r *http.Request) {
 
 	result := h.db.First(&topic, topicID)
 	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			RespondWithError(w, http.StatusNotFound, ErrTopicNotFound)
 			return
 		}
@@ -106,7 +107,7 @@ func (h *TopicHandler) UpdateTopic(w http.ResponseWriter, r *http.Request) {
 	var existingTopic models.Topic
 	result := h.db.First(&existingTopic, topicID)
 	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			RespondWithError(w, http.StatusNotFound, ErrTopicNotFound)
 		} else {
 			log.Printf("Database error in UpdateTopic: %v", result.Error)

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 
@@ -70,7 +71,7 @@ func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 
 	result := h.db.First(&user, userID)
 	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			RespondWithError(w, http.StatusNotFound, ErrUserNotFound)
 		} else {
 			log.Printf("Database error in GetUser: %v", result.Error)
@@ -89,7 +90,7 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	var existingUser models.User
 	result := h.db.First(&existingUser, userID)
 	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			RespondWithError(w, http.StatusNotFound, ErrUserNotFound)
 		} else {
 			log.Printf("Database error in UpdateUser: %v", result.Error)
@@ -132,59 +133,18 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // Deletes a user by ID
-// Sets all user's content to CreatedBy/AuthorID = 0 before deletion
 func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	userID := chi.URLParam(r, "id")
 
-	var user models.User
-	if err := h.db.First(&user, userID).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			RespondWithError(w, http.StatusNotFound, ErrUserNotFound)
-			return
-		}
-		log.Printf("Database error in DeleteUser (checking user): %v", err)
+	result := h.db.Delete(&models.User{}, userID)
+	if result.Error != nil {
+		log.Printf("Database error in DeleteUser: %v", result.Error)
 		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
 		return
 	}
 
-	tx := h.db.Begin()
-	if tx.Error != nil {
-		log.Printf("Database error in DeleteUser (starting transaction): %v", tx.Error)
-		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
-		return
-	}
-
-	if err := tx.Model(&models.Topic{}).Where("created_by = ?", userID).Update("created_by", 0).Error; err != nil {
-		tx.Rollback()
-		log.Printf("Database error in DeleteUser (updating topics): %v", err)
-		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
-		return
-	}
-
-	if err := tx.Model(&models.Post{}).Where("author_id = ?", userID).Update("author_id", 0).Error; err != nil {
-		tx.Rollback()
-		log.Printf("Database error in DeleteUser (updating posts): %v", err)
-		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
-		return
-	}
-
-	if err := tx.Model(&models.Comment{}).Where("author_id = ?", userID).Update("author_id", 0).Error; err != nil {
-		tx.Rollback()
-		log.Printf("Database error in DeleteUser (updating comments): %v", err)
-		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
-		return
-	}
-
-	if err := tx.Delete(&models.User{}, userID).Error; err != nil {
-		tx.Rollback()
-		log.Printf("Database error in DeleteUser (deleting user): %v", err)
-		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
-		return
-	}
-
-	if err := tx.Commit().Error; err != nil {
-		log.Printf("Database error in DeleteUser (committing transaction): %v", err)
-		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+	if result.RowsAffected == 0 {
+		RespondWithError(w, http.StatusNotFound, ErrUserNotFound)
 		return
 	}
 

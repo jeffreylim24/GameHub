@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 
@@ -34,14 +35,14 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if validation.IsIDZero(comment.AuthorID) {
+	if validation.IsNullableIDInvalid(comment.AuthorID) {
 		RespondWithError(w, http.StatusBadRequest, validation.ErrUserIDRequired)
 		return
 	}
 
 	var author models.User
-	if err := h.db.First(&author, comment.AuthorID).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
+	if err := h.db.First(&author, *comment.AuthorID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			RespondWithError(w, http.StatusBadRequest, ErrCreatorNotExist)
 			return
 		}
@@ -58,7 +59,7 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 
 	var post models.Post
 	if err := h.db.First(&post, comment.PostID).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			RespondWithError(w, http.StatusBadRequest, ErrPostNotFound)
 			return
 		}
@@ -99,7 +100,7 @@ func (h *CommentHandler) GetComment(w http.ResponseWriter, r *http.Request) {
 
 	result := h.db.First(&comment, commentID)
 	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			RespondWithError(w, http.StatusNotFound, ErrCommentNotFound)
 			return
 		}
@@ -118,7 +119,7 @@ func (h *CommentHandler) UpdateComment(w http.ResponseWriter, r *http.Request) {
 	var existingComment models.Comment
 	result := h.db.First(&existingComment, commentID)
 	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			RespondWithError(w, http.StatusNotFound, ErrCommentNotFound)
 			return
 		}
