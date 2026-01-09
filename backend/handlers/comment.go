@@ -83,7 +83,14 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 func (h *CommentHandler) GetComments(w http.ResponseWriter, r *http.Request) {
 	var comments []models.Comment
 
-	result := h.db.Find(&comments)
+	query := h.db.Model(&models.Comment{})
+
+	postID := r.URL.Query().Get("post_id")
+	if postID != "" {
+		query = query.Where("post_id = ?", postID)
+	}
+
+	result := query.Preload("Author").Order("created_at ASC").Find(&comments)
 	if result.Error != nil {
 		log.Printf("Database error in GetComments: %v", result.Error)
 		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
@@ -98,7 +105,7 @@ func (h *CommentHandler) GetComment(w http.ResponseWriter, r *http.Request) {
 	commentID := chi.URLParam(r, "id")
 	var comment models.Comment
 
-	result := h.db.First(&comment, commentID)
+	result := h.db.Preload("Author").First(&comment, commentID)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			RespondWithError(w, http.StatusNotFound, ErrCommentNotFound)

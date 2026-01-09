@@ -70,7 +70,7 @@ func (h *TopicHandler) CreateTopic(w http.ResponseWriter, r *http.Request) {
 func (h *TopicHandler) GetTopics(w http.ResponseWriter, r *http.Request) {
 	var topics []models.Topic
 
-	result := h.db.Find(&topics)
+	result := h.db.Preload("Creator").Order("created_at DESC").Find(&topics)
 	if result.Error != nil {
 		log.Printf("Database error in GetTopics: %v", result.Error)
 		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
@@ -85,7 +85,7 @@ func (h *TopicHandler) GetTopic(w http.ResponseWriter, r *http.Request) {
 	topicID := chi.URLParam(r, "id")
 	var topic models.Topic
 
-	result := h.db.First(&topic, topicID)
+	result := h.db.Preload("Creator").First(&topic, topicID)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			RespondWithError(w, http.StatusNotFound, ErrTopicNotFound)
