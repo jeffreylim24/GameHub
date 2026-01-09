@@ -9,16 +9,16 @@ import (
 type Post struct {
 	PostID      uint      `gorm:"primaryKey;autoIncrement" json:"post_id"`
 	TopicID     uint      `gorm:"not null;index" json:"topic_id"`
-	AuthorID    uint      `gorm:"not null;index" json:"author_id"`
+	AuthorID    *uint     `gorm:"index" json:"author_id,omitempty"`
 	Title       string    `gorm:"not null;size:300" json:"title"`
 	Content     string    `gorm:"type:text;not null" json:"content"`
-	Category    string    `gorm:"size:50;default:'Discussion'" json:"category,omitempty"` // e.g., Discussion, Question, Review
-	Platform    string    `gorm:"size:50" json:"platform,omitempty"`                      // e.g., PC, PlayStation, Xbox, Nintendo Switch
+	Category    string    `gorm:"size:50" json:"category,omitempty"` // e.g., Discussion, Question, Review, Highlight
+	Platform    string    `gorm:"size:50" json:"platform,omitempty"` // e.g., PC, PlayStation, Xbox, Nintendo Switch
 	HasSpoilers bool      `gorm:"default:false" json:"has_spoilers"`
 	CreatedAt   time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt   time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 
 	// Relationships (belongs to)
-	Topic  Topic `json:"topic"`
-	Author User  `gorm:"foreignKey:AuthorID" json:"author"`
+	Topic  Topic `gorm:"constraint:OnDelete:CASCADE" json:"topic"`
+	Author User  `gorm:"foreignKey:AuthorID;constraint:OnDelete:SET NULL" json:"author,omitempty"`
 }
