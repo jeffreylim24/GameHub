@@ -5,33 +5,20 @@ import (
 	"log"
 	"os"
 
-	"github.com/joho/godotenv"
+	"github.com/jeffreylim24/GameHub/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-// Retrieves an environment variable or returns a fallback value
-func getEnv(key, fallback string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-	return fallback
-}
-
 // Establishes a connection to the PostgreSQL database
 func Connect() *gorm.DB {
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("Warning: .env file not found, using system environment variables")
-	}
-
-	host := getEnv("DB_HOST", "localhost")
-	user := getEnv("DB_USER", "gamehub_user")
+	host := utils.GetEnv("DB_HOST", "localhost")
+	user := utils.GetEnv("DB_USER", "gamehub_user")
 	password := os.Getenv("DB_PASSWORD") // No fallback for security
-	dbname := getEnv("DB_NAME", "gamehub")
-	port := getEnv("DB_PORT", "5432")
-	sslmode := getEnv("DB_SSLMODE", "disable")
-	timezone := getEnv("DB_TZ", "Asia/Singapore")
+	dbname := utils.GetEnv("DB_NAME", "gamehub")
+	port := utils.GetEnv("DB_PORT", "5432")
+	sslmode := utils.GetEnv("DB_SSLMODE", "disable")
+	timezone := utils.GetEnv("DB_TZ", "Asia/Singapore")
 
 	if password == "" {
 		log.Fatal("DB_PASSWORD environment variable is required")

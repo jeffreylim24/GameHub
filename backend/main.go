@@ -1,15 +1,20 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/jeffreylim24/GameHub/database"
 	"github.com/jeffreylim24/GameHub/models"
 	"github.com/jeffreylim24/GameHub/routes"
+	"github.com/jeffreylim24/GameHub/utils"
 )
 
 func main() {
+	log.Println("Loading environment variables...")
+	utils.LoadEnv()
+
 	log.Println("Connecting to database...")
 	db := database.Connect()
 
@@ -19,6 +24,8 @@ func main() {
 	log.Println("Setting up router...")
 	r := routes.SetupRouter(db)
 
-	log.Println("Server starting on :8080")
-	log.Fatal(http.ListenAndServe(":8080", r)) // For development purposes only, adjust port in production
+	port := utils.GetEnv("SERVER_PORT", "8080")
+	serverAddr := fmt.Sprintf(":%s", port)
+	log.Printf("Server starting on %s", serverAddr)
+	log.Fatal(http.ListenAndServe(serverAddr, r))
 }
