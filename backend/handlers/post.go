@@ -98,7 +98,23 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	var posts []models.Post
 
-	result := h.db.Find(&posts)
+	query := h.db.Model(&models.Post{})
+
+	topicID := r.URL.Query().Get("topic_id")
+	category := r.URL.Query().Get("category")
+	platform := r.URL.Query().Get("platform")
+
+	if topicID != "" {
+		query = query.Where("topic_id = ?", topicID)
+	}
+	if category != "" {
+		query = query.Where("category = ?", category)
+	}
+	if platform != "" {
+		query = query.Where("platform = ?", platform)
+	}
+
+	result := query.Preload("Author").Preload("Topic").Order("created_at DESC").Find(&posts)
 	if result.Error != nil {
 		log.Printf("Database error in GetPosts: %v", result.Error)
 		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
@@ -113,7 +129,7 @@ func (h *PostHandler) GetPost(w http.ResponseWriter, r *http.Request) {
 	postID := chi.URLParam(r, "id")
 	var post models.Post
 
-	result := h.db.First(&post, postID)
+	result := h.db.Preload("Author").Preload("Topic").First(&post, postID)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			RespondWithError(w, http.StatusNotFound, ErrPostNotFound)
