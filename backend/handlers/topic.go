@@ -58,6 +58,10 @@ func (h *TopicHandler) CreateTopic(w http.ResponseWriter, r *http.Request) {
 
 	result := h.db.Create(&topic)
 	if result.Error != nil {
+		if validation.IsUniqueConstraintError(result.Error) {
+			RespondWithError(w, http.StatusConflict, ErrTopicTitleExists)
+			return
+		}
 		log.Printf("Database error in CreateTopic: %v", result.Error)
 		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
 		return
@@ -146,6 +150,10 @@ func (h *TopicHandler) UpdateTopic(w http.ResponseWriter, r *http.Request) {
 
 	result = h.db.Save(&existingTopic)
 	if result.Error != nil {
+		if validation.IsUniqueConstraintError(result.Error) {
+			RespondWithError(w, http.StatusConflict, ErrTopicTitleExists)
+			return
+		}
 		log.Printf("Database error in UpdateTopic: %v", result.Error)
 		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
 		return

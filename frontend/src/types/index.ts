@@ -147,6 +147,7 @@ export interface ApiError {
  */
 export interface GetPostsParams {
   topic_id?: number;
+  author_id?: number;
   category?: PostCategory;
   platform?: PostPlatform;
 }
@@ -156,4 +157,5 @@ export interface GetPostsParams {
  */
 export interface GetCommentsParams {
   post_id?: number;
+  author_id?: number;
 }
