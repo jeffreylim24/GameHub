@@ -86,8 +86,13 @@ func (h *CommentHandler) GetComments(w http.ResponseWriter, r *http.Request) {
 	query := h.db.Model(&models.Comment{})
 
 	postID := r.URL.Query().Get("post_id")
+	authorID := r.URL.Query().Get("author_id")
+
 	if postID != "" {
 		query = query.Where("post_id = ?", postID)
+	}
+	if authorID != "" {
+		query = query.Where("author_id = ?", authorID)
 	}
 
 	result := query.Preload("Author").Order("created_at ASC").Find(&comments)

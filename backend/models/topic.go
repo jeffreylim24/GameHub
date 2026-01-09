@@ -8,7 +8,7 @@ import (
 // Each topic is essentially a game (e.g., "The Legend of Zelda", "Elden Ring")
 type Topic struct {
 	TopicID     uint      `gorm:"primaryKey;autoIncrement" json:"topic_id"`
-	Title       string    `gorm:"not null;size:200" json:"title"`
+	Title       string    `gorm:"not null;size:200;uniqueIndex" json:"title"`
 	Description string    `gorm:"type:text" json:"description"`
 	CreatedBy   *uint     `gorm:"index" json:"created_by,omitempty"`
 	CreatedAt   time.Time `gorm:"autoCreateTime" json:"created_at"`

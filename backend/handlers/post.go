@@ -103,6 +103,7 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	topicID := r.URL.Query().Get("topic_id")
 	category := r.URL.Query().Get("category")
 	platform := r.URL.Query().Get("platform")
+	authorID := r.URL.Query().Get("author_id")
 
 	if topicID != "" {
 		query = query.Where("topic_id = ?", topicID)
@@ -112,6 +113,9 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	}
 	if platform != "" {
 		query = query.Where("platform = ?", platform)
+	}
+	if authorID != "" {
+		query = query.Where("author_id = ?", authorID)
 	}
 
 	result := query.Preload("Author").Preload("Topic").Order("created_at DESC").Find(&posts)

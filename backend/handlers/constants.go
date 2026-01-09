@@ -16,7 +16,8 @@ const (
 
 // Topic-related error messages
 const (
-	ErrTopicNotFound = "Topic not found"
+	ErrTopicNotFound    = "Topic not found"
+	ErrTopicTitleExists = "A topic with this title already exists"
 )
 
 // Post-related error messages
