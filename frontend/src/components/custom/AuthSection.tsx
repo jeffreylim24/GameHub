@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { LogOut, User } from 'lucide-react';
 
 export default function AuthSection() {
   const { isAuthenticated, username, logout } = useAuth();
@@ -13,12 +14,19 @@ export default function AuthSection() {
 
   if (isAuthenticated) {
     return (
-      <div className="flex items-center gap-4">
-        <span className="text-sm">
-          Welcome, <strong>{username}</strong>
-        </span>
-        <Button onClick={handleLogout} variant="outline" size="sm">
-          Logout
+      <div className="flex items-center gap-2">
+        <Button asChild variant="outline" size="icon-sm">
+          <Link to={`/user/${username}`} aria-label="View profile">
+            <User />
+          </Link>
+        </Button>
+        <Button
+          onClick={handleLogout}
+          variant="outline"
+          size="icon-sm"
+          aria-label="Log out"
+        >
+          <LogOut />
         </Button>
       </div>
     );
