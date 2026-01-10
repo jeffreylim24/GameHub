@@ -1,11 +1,72 @@
-/**
- * Home page - displays all posts feed.
- */
+import { useState, useEffect } from 'react';
+import { getPosts } from '@/api/posts';
+import type { Post } from '@/types';
+import PostCard from '@/components/custom/PostCard';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+
 export default function Home() {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getPosts();
+        setPosts(data);
+        setError('');
+      } catch (err) {
+        console.error('Failed to fetch posts:', err);
+        setError('Failed to load posts. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
+  if (isLoading) {
+    return (
+      // TODO: Replace with a proper skeleton loader
+      <div className="text-center py-12">
+        <p className="text-gray-500">Loading posts...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
+  }
+
+  if (posts.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-2xl font-bold mb-2">No posts yet</h2>
+        <p className="text-gray-500">Be the first to create a post!</p>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <h1>Home - All Posts Feed</h1>
-      <p>TODO: Implement posts feed</p>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold">All Posts</h1>
+        <p className="text-gray-600 mt-1">
+          Latest discussions from the community
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        {posts.map((post) => (
+          <PostCard key={post.post_id} post={post} />
+        ))}
+      </div>
     </div>
   );
 }

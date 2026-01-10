@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { getUsers } from '@/api/users';
+import { getUserByUsername } from '@/api/users';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -27,22 +27,19 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const users = await getUsers();
-      const existingUser = users.find(
-        (user) => user.username.toLowerCase() === username.trim().toLowerCase()
-      );
+      const user = await getUserByUsername(username.trim());
 
-      if (!existingUser) {
-        setError('Username not found. Please sign up first.');
-        setIsLoading(false);
-        return;
-      }
-      
-      login(existingUser);
+      login(user);
       navigate('/');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Login error:', err);
-      setError('Failed to login. Please try again.');
+
+      if (err.response?.status === 404) {
+        setError('Username not found. Please sign up first.');
+      } else {
+        setError('Failed to login. Please try again.');
+      }
+    } finally {
       setIsLoading(false);
     }
   };
