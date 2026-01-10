@@ -58,6 +58,7 @@ export default function PostCard({ post }: PostCardProps) {
               in{' '}
               <Link
                 to={`/topics/${post.topic_id}`}
+                onClick={handleTopicAndProfileClick}
                 className="font-semibold hover:underline"
               >
                 {post.topic?.title}
