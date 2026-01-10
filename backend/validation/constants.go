@@ -46,12 +46,12 @@ var (
 	ErrPostContentRequired  = "Post content cannot be empty."
 	ErrPostContentMinLength = fmt.Sprintf("Post content must be at least %d characters long.", PostContentMinLength)
 	ErrPostContentMaxLength = fmt.Sprintf("Post content cannot exceed %d characters.", PostContentMaxLength)
-	ErrPostCategoryInvalid  = "Invalid post category. Allowed categories are: Discussion, Question, Review, Highlight."
+	ErrPostCategoryInvalid  = "Invalid post category. Allowed categories are: Discussion, Question, Review, Highlight, Tips."
 	ErrPostPlatformInvalid  = "Invalid post platform. Allowed platforms are: PC, PlayStation, Xbox, Nintendo Switch."
 )
 
 // Allowed post categories
-var AllowedPostCategories = []string{"", "Discussion", "Question", "Review", "Highlight"}
+var AllowedPostCategories = []string{"", "Discussion", "Question", "Review", "Highlight", "Tips"}
 
 // Allowed post platforms
 var AllowedPostPlatforms = []string{"", "PC", "PlayStation", "Xbox", "Nintendo Switch"}

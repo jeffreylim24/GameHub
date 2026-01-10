@@ -12,7 +12,7 @@ type Post struct {
 	AuthorID    *uint     `gorm:"index" json:"author_id,omitempty"`
 	Title       string    `gorm:"not null;size:300" json:"title"`
 	Content     string    `gorm:"type:text;not null" json:"content"`
-	Category    string    `gorm:"size:50" json:"category,omitempty"` // e.g., Discussion, Question, Review, Highlight
+	Category    string    `gorm:"size:50" json:"category,omitempty"` // e.g., Discussion, Question, Review, Highlight, Tips
 	Platform    string    `gorm:"size:50" json:"platform,omitempty"` // e.g., PC, PlayStation, Xbox, Nintendo Switch
 	HasSpoilers bool      `gorm:"default:false" json:"has_spoilers"`
 	CreatedAt   time.Time `gorm:"autoCreateTime" json:"created_at"`
