@@ -1,5 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
+// Layout
+import MainLayout from '@/layouts/MainLayout';
+
 // Pages
 import Home from '@/pages/Home';
 import Topics from '@/pages/topics/Topics';
@@ -13,16 +16,18 @@ import Signup from '@/pages/auth/Signup';
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/topics" element={<Topics />} />
-        <Route path="/topics/:topicId" element={<TopicPosts />} />
-        <Route path="/topics/:topicId/posts/:postId" element={<PostView />} />
-        <Route path="/topics/:topicId/posts/new" element={<NewPost />} />
-        <Route path="/user/:username" element={<UserProfile />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-      </Routes>
+      <MainLayout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/topics" element={<Topics />} />
+          <Route path="/topics/:topicId" element={<TopicPosts />} />
+          <Route path="/topics/:topicId/posts/:postId" element={<PostView />} />
+          <Route path="/topics/:topicId/posts/new" element={<NewPost />} />
+          <Route path="/user/:username" element={<UserProfile />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+        </Routes>
+      </MainLayout>
     </BrowserRouter>
   );
 }
