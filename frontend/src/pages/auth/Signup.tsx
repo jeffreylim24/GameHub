@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { createUser } from '@/api/users';
@@ -44,6 +44,7 @@ export default function Signup() {
       } else {
         setError('Failed to create account. Please try again.');
       }
+    } finally {
       setIsLoading(false);
     }
   };

@@ -50,8 +50,28 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusCreated, user)
 }
 
-// Retrieves all users
+// Retrieves all users or a specific user by username query parameter
 func (h *UserHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
+	username := r.URL.Query().Get("username")
+
+	if username != "" {
+		var user models.User
+		result := h.db.Where("LOWER(username) = LOWER(?)", username).First(&user)
+
+		if result.Error != nil {
+			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+				RespondWithError(w, http.StatusNotFound, ErrUserNotFound)
+			} else {
+				log.Printf("Database error in GetUsers (username lookup): %v", result.Error)
+				RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+			}
+			return
+		}
+
+		RespondWithJSON(w, http.StatusOK, user)
+		return
+	}
+
 	var users []models.User
 
 	result := h.db.Find(&users)
