@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getTopic } from '@/api/topics';
 import { getPosts } from '@/api/posts';
 import type { Topic, Post } from '@/types';
@@ -11,6 +11,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 // TODO: Infinite scroll but find way to optimize performance for large number of posts
 export default function TopicPosts() {
   const { topicId } = useParams<{ topicId: string }>();
+  const navigate = useNavigate();
   const [topic, setTopic] = useState<Topic | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -72,7 +73,7 @@ export default function TopicPosts() {
       <div>
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-2xl font-bold">Posts</h2>
-          <Button onClick={() => {/* TODO: Open create post dialog */}}>
+          <Button onClick={() => navigate(`/posts/new?topicId=${topicId}`)}>
             Create Post
           </Button>
         </div>
@@ -80,7 +81,7 @@ export default function TopicPosts() {
         {posts.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-500 mb-4">No posts in this topic yet.</p>
-            <Button onClick={() => {/* TODO: Open create post dialog */}}>
+            <Button onClick={() => navigate(`/posts/new?topicId=${topicId}`)}>
               Create the first post
             </Button>
           </div>

@@ -55,7 +55,7 @@ export interface Comment {
 /**
  * Post categorization types.
  */
-export type PostCategory = 'Discussion' | 'Question' | 'Review' | 'Highlight';
+export type PostCategory = 'Discussion' | 'Question' | 'Review' | 'Highlight' | 'Tips';
 
 /**
  * Gaming platform types.

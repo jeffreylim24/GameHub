@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,8 +14,10 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 const signupSchema = z.object({
   username: z
     .string()
-    .min(3, 'Username must be at least 3 characters')
-    .max(50, 'Username must not exceed 50 characters')
+    .transform(s => s.trim())
+    .pipe(z.string()
+      .min(3, 'Username must be at least 3 characters')
+      .max(50, 'Username must not exceed 50 characters'))
 })
 
 type SignupFormData = z.infer<typeof signupSchema>;
@@ -42,7 +44,7 @@ export default function Signup() {
     setIsLoading(true);
 
     try {
-      const newUser = await createUser({ username: data.username.trim() });
+      const newUser = await createUser({ username: data.username });
       login(newUser);
       navigate('/');
     } catch (err: any) {

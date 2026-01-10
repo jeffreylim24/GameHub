@@ -1,9 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-// Layout
 import MainLayout from '@/layouts/MainLayout';
 
-// Pages
 import Home from '@/pages/Home';
 import Topics from '@/pages/topics/Topics';
 import TopicPosts from '@/pages/topics/TopicPosts';
@@ -22,7 +20,7 @@ function App() {
           <Route path="/topics" element={<Topics />} />
           <Route path="/topics/:topicId" element={<TopicPosts />} />
           <Route path="/topics/:topicId/posts/:postId" element={<PostView />} />
-          <Route path="/topics/:topicId/posts/new" element={<NewPost />} />
+          <Route path="/posts/new" element={<NewPost />} />
           <Route path="/user/:username" element={<UserProfile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />

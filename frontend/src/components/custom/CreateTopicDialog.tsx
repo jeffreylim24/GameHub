@@ -22,8 +22,10 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 const createTopicSchema = z.object({
   title: z
     .string()
-    .min(2, 'Title must be at least 2 characters')
-    .max(200, 'Title must not exceed 200 characters'),
+    .transform(s => s.trim())
+    .pipe(z.string()
+      .min(2, 'Title must be at least 2 characters')
+      .max(200, 'Title must not exceed 200 characters')),
   description: z
     .string()
     .max(500, 'Description must not exceed 500 characters')
