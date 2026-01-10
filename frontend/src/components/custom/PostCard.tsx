@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router-dom';
+import type { MouseEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import type { Post } from '@/types';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +13,9 @@ export default function PostCard({ post }: PostCardProps) {
 
   const handleClick = () => {
     navigate(`/topics/${post.topic_id}/posts/${post.post_id}`);
+  };
+  const handleTopicAndProfileClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.stopPropagation();
   };
 
   const formatDate = (dateString: string) => {
@@ -51,9 +55,26 @@ export default function PostCard({ post }: PostCardProps) {
           <div className="flex-1">
             <CardTitle className="text-xl">{post.title}</CardTitle>
             <CardDescription className="mt-1">
-              in <strong>{post.topic?.title || 'Unknown Topic'}</strong>
+              in{' '}
+              <Link
+                to={`/topics/${post.topic_id}`}
+                className="font-semibold hover:underline"
+              >
+                {post.topic?.title}
+              </Link>
               {' • '}
-              by <strong>{post.author?.username || 'Anonymous'}</strong>
+              by{' '}
+              {post.author?.username ? (
+                <Link
+                  to={`/user/${post.author.username}`}
+                  onClick={handleTopicAndProfileClick}
+                  className="font-semibold hover:underline"
+                >
+                  {post.author.username}
+                </Link>
+              ) : (
+                <strong>Anonymous</strong>
+              )}
               {' • '}
               {formatDate(post.created_at)}
             </CardDescription>

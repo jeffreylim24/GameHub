@@ -1,4 +1,5 @@
 import type { Comment } from '@/types';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
@@ -23,9 +24,16 @@ export default function CommentCard({ comment }: CommentCardProps) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="font-semibold">
-              {comment.author?.username || 'Anonymous'}
-            </span>
+            {comment.author?.username ? (
+              <Link
+                to={`/user/${comment.author.username}`}
+                className="font-semibold hover:underline"
+              >
+                {comment.author.username}
+              </Link>
+            ) : (
+              <span className="font-semibold">Anonymous</span>
+            )}
             <span className="text-sm text-gray-500">
               {formatDate(comment.created_at)}
             </span>
