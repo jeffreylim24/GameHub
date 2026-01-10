@@ -58,15 +58,15 @@ export default function PostCard({ post }: PostCardProps) {
               {formatDate(post.created_at)}
             </CardDescription>
           </div>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 items-end">
             {post.category && (
-              <Badge className="w-30" variant="secondary">{post.category}</Badge>
+              <Badge variant="secondary">{post.category}</Badge>
             )}
             {post.platform && (
-              <Badge className="w-30" variant="outline">{post.platform}</Badge>
+              <Badge variant="outline">{post.platform}</Badge>
             )}
             {post.has_spoilers && (
-              <Badge className="w-30" variant="destructive">Spoilers</Badge>
+              <Badge variant="destructive">Spoilers</Badge>
             )}
           </div>
         </div>
