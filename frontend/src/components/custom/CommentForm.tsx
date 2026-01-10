@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { useAuth } from '@/contexts/AuthContext';
 import { createComment } from '@/api/comments';
 import type { Comment } from '@/types';
@@ -14,40 +17,56 @@ interface CommentFormProps {
   onCommentAdded: (comment: Comment) => void;
 }
 
+const commentSchema = z.object({
+  content: z
+    .string()
+    .min(1, 'Comment cannot be empty')
+    .max(1000, 'Comment must not exceed 1000 characters'),
+  has_spoilers: z.boolean(),
+});
+
+type CommentFormData = z.infer<typeof commentSchema>;
+
 export default function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
   const { isAuthenticated, currentUserId } = useAuth();
-  const [content, setContent] = useState('');
-  const [hasSpoilers, setHasSpoilers] = useState(false);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    watch,
+  } = useForm<CommentFormData>({
+    resolver: zodResolver(commentSchema),
+    defaultValues: {
+      content: '',
+      has_spoilers: false,
+    },
+  });
 
+  const content = watch('content');
+
+  const onSubmit = async (data: CommentFormData) => {
     if (!isAuthenticated || !currentUserId) {
       setError('You must be logged in to comment');
       return;
     }
 
-    if (!content.trim()) {
-      setError('Comment cannot be empty');
-      return;
-    }
-
+    setError('');
     setIsSubmitting(true);
 
     try {
       const newComment = await createComment({
         post_id: postId,
         author_id: currentUserId,
-        content: content.trim(),
-        has_spoilers: hasSpoilers,
+        content: data.content.trim(),
+        has_spoilers: data.has_spoilers,
       });
 
       onCommentAdded(newComment);
-      setContent('');
-      setHasSpoilers(false);
+      reset();
     } catch (err: any) {
       console.error('Failed to create comment:', err);
       if (err.response?.data?.error) {
@@ -76,28 +95,29 @@ export default function CommentForm({ postId, onCommentAdded }: CommentFormProps
         <CardTitle>Add a Comment</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="content">Your Comment</Label>
             <Textarea
               id="content"
               placeholder="Share your thoughts..."
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
+              {...register('content')}
               disabled={isSubmitting}
               rows={4}
               maxLength={1000}
             />
+            {errors.content && (
+              <p className="text-sm text-red-500">{errors.content.message}</p>
+            )}
             <p className="text-xs text-gray-500 text-right">
-              {content.length}/1000 characters
+              {content?.length || 0}/1000 characters
             </p>
           </div>
 
           <div className="flex items-center space-x-2">
             <Checkbox
               id="spoilers"
-              checked={hasSpoilers}
-              onCheckedChange={(checked) => setHasSpoilers(checked === true)}
+              {...register('has_spoilers')}
               disabled={isSubmitting}
             />
             <Label htmlFor="spoilers" className="cursor-pointer">

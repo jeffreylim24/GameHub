@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { useAuth } from '@/contexts/AuthContext';
 import { createUser } from '@/api/users';
 import { Button } from '@/components/ui/button';
@@ -8,37 +11,43 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
+const signupSchema = z.object({
+  username: z
+    .string()
+    .min(3, 'Username must be at least 3 characters')
+    .max(50, 'Username must not exceed 50 characters')
+})
+
+type SignupFormData = z.infer<typeof signupSchema>;
+
 export default function Signup() {
-  const [username, setUsername] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignupFormData>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      username: '',
+    },
+  });
+
+  const onSubmit = async (data: SignupFormData) => {
     setError('');
-
-    if (!username.trim()) {
-      setError('Please enter a username');
-      return;
-    }
-
-    if (username.trim().length < 3 || username.trim().length > 50) {
-      setError('Username must be between 3 and 50 characters');
-      return;
-    }
-
     setIsLoading(true);
 
     try {
-      const newUser = await createUser({ username: username.trim() });
-
+      const newUser = await createUser({ username: data.username.trim() });
       login(newUser);
       navigate('/');
     } catch (err: any) {
       console.error('Signup error:', err);
-
+      
       if (err.response?.data?.error) {
         setError(err.response.data.error);
       } else {
@@ -48,6 +57,7 @@ export default function Signup() {
       setIsLoading(false);
     }
   };
+
 
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
@@ -59,20 +69,21 @@ export default function Signup() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
               <Input
                 id="username"
                 type="text"
                 placeholder="Choose a username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                {...register('username')}
                 disabled={isLoading}
               />
-              <p className="text-xs text-gray-500">
-                3-50 characters, must be unique
-              </p>
+              {errors.username && (
+                <p className="text-sm text-red-500">
+                  {errors.username.message}
+                </p>
+              )}
             </div>
 
             {error && (
