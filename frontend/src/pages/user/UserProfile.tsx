@@ -66,11 +66,6 @@ export default function UserProfile() {
     fetchProfile();
   }, [userId]);
 
-  const handlePostDeleted = (postId: number) => {
-    setPosts((prev) => prev.filter((p) => p.post_id !== postId));
-    setComments((prev) => prev.filter((c) => c.post_id !== postId));
-  };
-
   const handleCommentDeleted = (commentId: number) => {
     setComments((prev) => prev.filter((c) => c.comment_id !== commentId));
   };
@@ -172,7 +167,7 @@ export default function UserProfile() {
           ) : (
             <div className="space-y-4">
               {posts.map((post) => (
-                <PostCard key={post.post_id} post={post} onDelete={handlePostDeleted} />
+                <PostCard key={post.post_id} post={post} />
               ))}
             </div>
           )}

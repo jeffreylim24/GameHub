@@ -42,10 +42,6 @@ export default function TopicPosts() {
     fetchData();
   }, [topicId]);
 
-  const handlePostDeleted = (postId: number) => {
-    setPosts((prev) => prev.filter((p) => p.post_id !== postId));
-  };
-
   // TODO: Replace with proper loading skeleton
   if (isLoading) {
     return (
@@ -92,7 +88,7 @@ export default function TopicPosts() {
         ) : (
           <div className="space-y-4">
             {posts.map((post) => (
-              <PostCard key={post.post_id} post={post} onDelete={handlePostDeleted} />
+              <PostCard key={post.post_id} post={post} />
             ))}
           </div>
         )}

@@ -1,10 +1,6 @@
 import type { MouseEvent } from 'react';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import type { Post } from '@/types';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,29 +11,41 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { deletePost } from '@/api/posts';
+import PostCardListView from './PostCardListView';
+import PostCardDetailView from './PostCardDetailView';
+import PostCardEdit from './PostCardEdit';
 
 interface PostCardProps {
   post: Post;
   onDelete?: (postId: number) => void;
+  onUpdate?: (updatedPost: Post) => void;
+  variant?: 'list' | 'detail';
 }
 
-export default function PostCard({ post, onDelete }: PostCardProps) {
-  const navigate = useNavigate();
+export default function PostCard({ post, onDelete, onUpdate, variant = 'list' }: PostCardProps) {
   const { currentUserId } = useAuth();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const isAuthor = currentUserId !== null && post.author_id === currentUserId;
 
-  const handleClick = () => {
-    navigate(`/topics/${post.topic_id}/posts/${post.post_id}`);
+  const handleEditClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setIsEditing(true);
   };
 
-  const handleTopicAndProfileClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    event.stopPropagation();
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  const handleUpdate = (updatedPost: Post) => {
+    setIsEditing(false);
+    if (onUpdate) {
+      onUpdate(updatedPost);
+    }
   };
 
   const handleDeleteClick = (event: MouseEvent<HTMLButtonElement>) => {
@@ -61,100 +69,22 @@ export default function PostCard({ post, onDelete }: PostCardProps) {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInMs = now.getTime() - date.getTime();
-    const diffInHours = diffInMs / (1000 * 60 * 60);
-
-    if (diffInHours < 1) {
-      const minutes = Math.floor(diffInMs / (1000 * 60));
-      return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
-    } else if (diffInHours < 24) {
-      const hours = Math.floor(diffInHours);
-      return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
-    } else if (diffInHours < 168) {
-      const days = Math.floor(diffInHours / 24);
-      return `${days} day${days !== 1 ? 's' : ''} ago`;
-    } else if (diffInHours < 720) {
-      const weeks = Math.floor(diffInHours / 168);
-      return `${weeks} week${weeks !== 1 ? 's' : ''} ago`;
-    } else if (diffInHours < 8760) {
-      const months = Math.floor(diffInHours / 720);
-      return `${months} month${months !== 1 ? 's' : ''} ago`;
-    } else {
-      const years = Math.floor(diffInHours / 8760);
-      return `${years} year${years !== 1 ? 's' : ''} ago`;
-    }
-  };
-
   return (
     <>
-      <Card
-        className="cursor-pointer hover:shadow-md transition-shadow"
-        onClick={handleClick}
-      >
-        <CardHeader>
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <CardTitle className="text-xl">{post.title}</CardTitle>
-              <CardDescription className="mt-1">
-                in{' '}
-                <Link
-                  to={`/topics/${post.topic_id}`}
-                  onClick={handleTopicAndProfileClick}
-                  className="font-semibold hover:underline"
-                >
-                  {post.topic?.title}
-                </Link>
-                {' • '}
-                by{' '}
-                {post.author?.username ? (
-                  <Link
-                    to={`/user/${post.author.user_id}`}
-                    onClick={handleTopicAndProfileClick}
-                    className="font-semibold hover:underline"
-                  >
-                    {post.author.username}
-                  </Link>
-                ) : (
-                  <strong>Anonymous</strong>
-                )}
-                {' • '}
-                {formatDate(post.created_at)}
-              </CardDescription>
-            </div>
-            <div className="flex gap-2 items-start">
-              <div className="flex flex-col gap-1 items-end">
-                {post.category && (
-                  <Badge variant="secondary">{post.category}</Badge>
-                )}
-                {post.platform && (
-                  <Badge variant="outline">{post.platform}</Badge>
-                )}
-                {post.has_spoilers && (
-                  <Badge variant="destructive">Spoilers</Badge>
-                )}
-              </div>
-              {isAuthor && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleDeleteClick}
-                  className="h-8 w-8"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-gray-600 line-clamp-2">
-            {post.content}
-          </p>
-        </CardContent>
-      </Card>
+      {isEditing ? (
+        <PostCardEdit post={post} onCancel={handleCancelEdit} onUpdate={handleUpdate} />
+      ) : variant === 'detail' ? (
+        <PostCardDetailView
+          post={post}
+          isAuthor={isAuthor}
+          onEditClick={handleEditClick}
+          onDeleteClick={handleDeleteClick}
+        />
+      ) : (
+        <PostCardListView
+          post={post}
+        />
+      )}
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
