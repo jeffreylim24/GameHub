@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Trash2, Edit2 } from 'lucide-react';
+import { formatLongDate } from '@/lib/date';
 
 interface PostCardDetailViewProps {
   post: Post;
@@ -19,17 +20,6 @@ export default function PostCardDetailView({
   onEditClick,
   onDeleteClick,
 }: PostCardDetailViewProps) {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
   return (
     <Card>
       <CardHeader>
@@ -49,7 +39,7 @@ export default function PostCardDetailView({
                 <strong>Anonymous</strong>
               )}
               {' on '}
-              {formatDate(post.created_at)}
+              {formatLongDate(post.created_at)}
               {' in '}
               <Link
                 to={`/topics/${post.topic_id}`}

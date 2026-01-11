@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
+import { formatRelativeTime } from '@/lib/date';
 
 interface CommentCardDetailViewProps {
   comment: Comment;
@@ -17,32 +18,6 @@ export default function CommentCardDetailView({
   isAuthor,
   onDeleteClick,
 }: CommentCardDetailViewProps) {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInMs = now.getTime() - date.getTime();
-    const diffInHours = diffInMs / (1000 * 60 * 60);
-
-    if (diffInHours < 1) {
-      const minutes = Math.floor(diffInMs / (1000 * 60));
-      return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
-    } else if (diffInHours < 24) {
-      const hours = Math.floor(diffInHours);
-      return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
-    } else if (diffInHours < 168) {
-      const days = Math.floor(diffInHours / 24);
-      return `${days} day${days !== 1 ? 's' : ''} ago`;
-    } else if (diffInHours < 720) {
-      const weeks = Math.floor(diffInHours / 168);
-      return `${weeks} week${weeks !== 1 ? 's' : ''} ago`;
-    } else if (diffInHours < 8760) {
-      const months = Math.floor(diffInHours / 720);
-      return `${months} month${months !== 1 ? 's' : ''} ago`;
-    } else {
-      const years = Math.floor(diffInHours / 8760);
-      return `${years} year${years !== 1 ? 's' : ''} ago`;
-    }
-  };
 
   return (
     <Card>
@@ -60,7 +35,7 @@ export default function CommentCardDetailView({
               <span className="font-semibold">Anonymous</span>
             )}
             <span className="text-sm text-gray-500">
-              {formatDate(comment.created_at)}
+              {formatRelativeTime(comment.created_at)}
             </span>
           </div>
           <div className="flex items-center gap-2">

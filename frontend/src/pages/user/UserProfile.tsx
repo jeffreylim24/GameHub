@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { formatJoinDate } from '@/lib/date';
 
 // TODO: Implement pagination for posts and comments if needed
 export default function UserProfile() {
@@ -81,15 +82,6 @@ export default function UserProfile() {
     } finally {
       setIsDeleting(false);
     }
-  };
-
-  const formatJoinDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
   };
 
   if (isLoading) {

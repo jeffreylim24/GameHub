@@ -2,6 +2,7 @@ import type { MouseEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import type { Comment } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
+import { formatAbsoluteDate } from '@/lib/date';
 
 interface CommentCardListViewProps {
   comment: Comment;
@@ -20,17 +21,6 @@ export default function CommentCardListView({
 
   const handleLinkClick = (event: MouseEvent<HTMLAnchorElement>) => {
     event.stopPropagation();
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
   };
 
   const truncateTitle = (title: string, maxLength: number) => {
@@ -67,7 +57,7 @@ export default function CommentCardListView({
             {comment.post?.topic?.title || 'Unknown Topic'}
           </Link>
           {' • '}
-          {formatDate(comment.created_at)}
+          {formatAbsoluteDate(comment.created_at)}
         </CardDescription>
       </CardHeader>
       <CardContent>
