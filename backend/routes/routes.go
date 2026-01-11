@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/jeffreylim24/GameHub/handlers"
+	authmw "github.com/jeffreylim24/GameHub/middleware"
 	"gorm.io/gorm"
 )
 
@@ -67,29 +68,30 @@ func SetupRouter(db *gorm.DB) http.Handler {
 	r.Route("/api", func(r chi.Router) {
 		r.Post("/auth/register", authHandler.Register)
 		r.Post("/auth/login", authHandler.Login)
+		r.With(authmw.RequireAuth).Get("/auth/me", authHandler.GetCurrentUser)
 
 		r.Get("/users", userHandler.GetUsers)
 		r.Get("/users/{id}", userHandler.GetUser)
-		r.Put("/users/{id}", userHandler.UpdateUser)
-		r.Delete("/users/{id}", userHandler.DeleteUser)
+		r.With(authmw.RequireAuth).Put("/users/{id}", userHandler.UpdateUser)
+		r.With(authmw.RequireAuth).Delete("/users/{id}", userHandler.DeleteUser)
 
-		r.Post("/topics", topicHandler.CreateTopic)
 		r.Get("/topics", topicHandler.GetTopics)
 		r.Get("/topics/{id}", topicHandler.GetTopic)
-		r.Put("/topics/{id}", topicHandler.UpdateTopic)
-		r.Delete("/topics/{id}", topicHandler.DeleteTopic)
+		r.With(authmw.RequireAuth).Post("/topics", topicHandler.CreateTopic)
+		r.With(authmw.RequireAdmin).Put("/topics/{id}", topicHandler.UpdateTopic)
+		r.With(authmw.RequireAdmin).Delete("/topics/{id}", topicHandler.DeleteTopic)
 
-		r.Post("/posts", postHandler.CreatePost)
 		r.Get("/posts", postHandler.GetPosts)
 		r.Get("/posts/{id}", postHandler.GetPost)
-		r.Put("/posts/{id}", postHandler.UpdatePost)
-		r.Delete("/posts/{id}", postHandler.DeletePost)
+		r.With(authmw.RequireAuth).Post("/posts", postHandler.CreatePost)
+		r.With(authmw.RequireAuth).Put("/posts/{id}", postHandler.UpdatePost)
+		r.With(authmw.RequireAuth).Delete("/posts/{id}", postHandler.DeletePost)
 
-		r.Post("/comments", commentHandler.CreateComment)
 		r.Get("/comments", commentHandler.GetComments)
 		r.Get("/comments/{id}", commentHandler.GetComment)
-		r.Put("/comments/{id}", commentHandler.UpdateComment)
-		r.Delete("/comments/{id}", commentHandler.DeleteComment)
+		r.With(authmw.RequireAuth).Post("/comments", commentHandler.CreateComment)
+		r.With(authmw.RequireAuth).Put("/comments/{id}", commentHandler.UpdateComment)
+		r.With(authmw.RequireAuth).Delete("/comments/{id}", commentHandler.DeleteComment)
 	})
 
 	return r

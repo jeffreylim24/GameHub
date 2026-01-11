@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jeffreylim24/GameHub/models"
+	"github.com/jeffreylim24/GameHub/utils"
 	"github.com/jeffreylim24/GameHub/validation"
 	"gorm.io/gorm"
 )
@@ -23,6 +24,12 @@ func NewPostHandler(db *gorm.DB) *PostHandler {
 
 // Creates a new post
 func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
+	claims, ok := r.Context().Value(UserContextKey).(*utils.Claims)
+	if !ok {
+		RespondWithError(w, http.StatusUnauthorized, "Authentication required")
+		return
+	}
+
 	var post models.Post
 
 	if err := json.NewDecoder(r.Body).Decode(&post); err != nil {
@@ -50,22 +57,8 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if validation.IsNullableIDInvalid(post.AuthorID) {
-		RespondWithError(w, http.StatusBadRequest, validation.ErrUserIDRequired)
-		return
-	}
-
-	var author models.User
-	if err := h.db.First(&author, *post.AuthorID).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			RespondWithError(w, http.StatusBadRequest, ErrCreatorNotExist)
-			return
-		}
-
-		log.Printf("Database error in CreatePost (checking author): %v", err)
-		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
-		return
-	}
+	// Set the author ID from the authenticated user (ignore any author_id from request body)
+	post.AuthorID = &claims.UserID
 
 	if validation.IsIDZero(post.TopicID) {
 		RespondWithError(w, http.StatusBadRequest, validation.ErrTopicIDRequired)
@@ -151,6 +144,12 @@ func (h *PostHandler) GetPost(w http.ResponseWriter, r *http.Request) {
 func (h *PostHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	postID := chi.URLParam(r, "id")
 
+	claims, ok := r.Context().Value(UserContextKey).(*utils.Claims)
+	if !ok {
+		RespondWithError(w, http.StatusUnauthorized, "Authentication required")
+		return
+	}
+
 	var existingPost models.Post
 	result := h.db.First(&existingPost, postID)
 	if result.Error != nil {
@@ -160,6 +159,11 @@ func (h *PostHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 		}
 		log.Printf("Database error in UpdatePost: %v", result.Error)
 		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+		return
+	}
+
+	if claims.UserID != *existingPost.AuthorID && claims.Role != ROLE_ADMIN {
+		RespondWithError(w, http.StatusForbidden, "You can only update your own post")
 		return
 	}
 
@@ -230,14 +234,33 @@ func (h *PostHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 	postID := chi.URLParam(r, "id")
 
-	result := h.db.Delete(&models.Post{}, postID)
+	claims, ok := r.Context().Value(UserContextKey).(*utils.Claims)
+	if !ok {
+		RespondWithError(w, http.StatusUnauthorized, "Authentication required")
+		return
+	}
+
+	var existingPost models.Post
+	result := h.db.First(&existingPost, postID)
 	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			RespondWithError(w, http.StatusNotFound, ErrPostNotFound)
+			return
+		}
 		log.Printf("Database error in DeletePost: %v", result.Error)
 		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
 		return
 	}
-	if result.RowsAffected == 0 {
-		RespondWithError(w, http.StatusNotFound, ErrPostNotFound)
+
+	if claims.UserID != *existingPost.AuthorID && claims.Role != ROLE_ADMIN {
+		RespondWithError(w, http.StatusForbidden, "You can only delete your own post")
+		return
+	}
+
+	result = h.db.Delete(&existingPost)
+	if result.Error != nil {
+		log.Printf("Database error in DeletePost: %v", result.Error)
+		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
 		return
 	}
 

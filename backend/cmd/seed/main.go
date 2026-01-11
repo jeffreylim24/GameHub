@@ -216,7 +216,17 @@ func ensureUser(db *gorm.DB, username string) (models.User, error) {
 		return user, err
 	}
 
-	user = models.User{Username: username}
+	// Hash the default password "password" for seeded users
+	hashedPassword, err := utils.HashPassword("password")
+	if err != nil {
+		return user, err
+	}
+
+	user = models.User{
+		Username:     username,
+		PasswordHash: hashedPassword,
+		Role:         "user",
+	}
 	return user, db.Create(&user).Error
 }
 

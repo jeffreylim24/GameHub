@@ -36,10 +36,3 @@ func ValidatePassword(password string) string {
 
 	return ""
 }
-
-func ValidateRole(role string) string {
-	if role != "user" && role != "admin" {
-		return ErrInvalidRole
-	}
-	return ""
-}

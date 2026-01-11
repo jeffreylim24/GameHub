@@ -63,4 +63,24 @@ func GenerateJWT(userID uint, username, role string) (string, error) {
 	return tokenString, nil
 }
 
-// TODO: ValidateJWT - validates a JWT token and returns the claims
+// ValidateJWT validates a JWT token and returns the claims
+func ValidateJWT(tokenString string) (*Claims, error) {
+	jwtSecret := os.Getenv("JWT_SECRET")
+
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (any, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(jwtSecret), nil
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse token: %w", err)
+	}
+
+	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
+		return claims, nil
+	}
+
+	return nil, fmt.Errorf("invalid token claims")
+}

@@ -65,12 +65,10 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// All users registered via this endpoint are assigned the "user" role
-	// Admin accounts must be created directly in the database
 	user := models.User{
 		Username:     req.Username,
 		PasswordHash: hashedPassword,
-		Role:         "user",
+		Role:         ROLE_USER,
 	}
 
 	result := h.db.Create(&user)
@@ -99,7 +97,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusCreated, response)
 }
 
-// Authenticates a user and returns a JWT token
+// Login authenticates a user and returns a JWT token
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req LoginRequest
 
@@ -142,4 +140,27 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		Token: token,
 	}
 	RespondWithJSON(w, http.StatusOK, response)
+}
+
+// GetCurrentUser returns the currently authenticated user's information
+func (h *AuthHandler) GetCurrentUser(w http.ResponseWriter, r *http.Request) {
+	claims, ok := r.Context().Value(UserContextKey).(*utils.Claims)
+	if !ok {
+		RespondWithError(w, http.StatusUnauthorized, "Authentication required")
+		return
+	}
+
+	var user models.User
+	result := h.db.First(&user, claims.UserID)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			RespondWithError(w, http.StatusNotFound, "User not found")
+		} else {
+			log.Printf("Database error in GetCurrentUser: %v", result.Error)
+			RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+		}
+		return
+	}
+
+	RespondWithJSON(w, http.StatusOK, user)
 }

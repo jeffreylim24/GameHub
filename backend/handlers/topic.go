@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jeffreylim24/GameHub/models"
+	"github.com/jeffreylim24/GameHub/utils"
 	"github.com/jeffreylim24/GameHub/validation"
 	"gorm.io/gorm"
 )
@@ -23,6 +24,12 @@ func NewTopicHandler(db *gorm.DB) *TopicHandler {
 
 // Creates a new topic
 func (h *TopicHandler) CreateTopic(w http.ResponseWriter, r *http.Request) {
+	claims, ok := r.Context().Value(UserContextKey).(*utils.Claims)
+	if !ok {
+		RespondWithError(w, http.StatusUnauthorized, "Authentication required")
+		return
+	}
+
 	var topic models.Topic
 
 	if err := json.NewDecoder(r.Body).Decode(&topic); err != nil {
@@ -40,21 +47,7 @@ func (h *TopicHandler) CreateTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if validation.IsNullableIDInvalid(topic.CreatedBy) {
-		RespondWithError(w, http.StatusBadRequest, validation.ErrUserIDRequired)
-		return
-	}
-
-	var creator models.User
-	if err := h.db.First(&creator, *topic.CreatedBy).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			RespondWithError(w, http.StatusBadRequest, ErrCreatorNotExist)
-			return
-		}
-		log.Printf("Database error in CreateTopic (checking creator): %v", err)
-		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
-		return
-	}
+	topic.CreatedBy = &claims.UserID
 
 	result := h.db.Create(&topic)
 	if result.Error != nil {
