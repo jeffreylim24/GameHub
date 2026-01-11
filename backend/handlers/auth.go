@@ -25,7 +25,6 @@ func NewAuthHandler(db *gorm.DB) *AuthHandler {
 type RegisterRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
-	Role     string `json:"role,omitempty"`
 }
 
 // LoginRequest represents the login request payload
@@ -59,15 +58,6 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Role == "" {
-		req.Role = "user"
-	}
-
-	if errMsg := validation.ValidateRole(req.Role); errMsg != "" {
-		RespondWithError(w, http.StatusBadRequest, errMsg)
-		return
-	}
-
 	hashedPassword, err := utils.HashPassword(req.Password)
 	if err != nil {
 		log.Printf("Error hashing password in Register: %v", err)
@@ -75,10 +65,12 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// All users registered via this endpoint are assigned the "user" role
+	// Admin accounts must be created directly in the database
 	user := models.User{
 		Username:     req.Username,
 		PasswordHash: hashedPassword,
-		Role:         req.Role,
+		Role:         "user",
 	}
 
 	result := h.db.Create(&user)
