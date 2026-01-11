@@ -77,21 +77,23 @@ export default function PostView() {
 
   return (
     <div className="space-y-6">
-      <div className="text-sm text-gray-600">
-        <Link to={`/topics/${post.topic_id}`} className="hover:underline">
-          {post.topic?.title}
-        </Link>
-        {' / '}
-        <span className="text-gray-900">{post.title}</span>
-      </div>
-
       <Card>
         <CardHeader>
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <CardTitle className="text-2xl mb-2">{post.title}</CardTitle>
               <CardDescription>
-                Posted by <strong>{post.author?.username || 'Anonymous'}</strong>
+                Posted by{' '}
+                {post.author?.username ? (
+                  <Link
+                    to={`/user/${post.author.username}`}
+                    className="font-semibold hover:underline"
+                  >
+                    {post.author.username}
+                  </Link>
+                ) : (
+                  <strong>Anonymous</strong>
+                )}
                 {' on '}
                 {formatDate(post.created_at)}
                 {' in '}
