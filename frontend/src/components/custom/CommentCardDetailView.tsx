@@ -4,19 +4,21 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Edit2 } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/date';
 
 interface CommentCardDetailViewProps {
   comment: Comment;
   isAuthor: boolean;
   onDeleteClick: (event: MouseEvent<HTMLButtonElement>) => void;
+  onEditClick: (event: MouseEvent<HTMLButtonElement>) => void;
 }
 
 export default function CommentCardDetailView({
   comment,
   isAuthor,
   onDeleteClick,
+  onEditClick,
 }: CommentCardDetailViewProps) {
 
   return (
@@ -43,14 +45,24 @@ export default function CommentCardDetailView({
               <Badge variant="destructive">Spoilers</Badge>
             )}
             {isAuthor && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onDeleteClick}
-                className="h-8 w-8"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={onEditClick}
+                  className="h-8 w-8"
+                >
+                  <Edit2 className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={onDeleteClick}
+                  className="h-8 w-8"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </>
             )}
           </div>
         </div>

@@ -217,6 +217,12 @@ func (h *PostHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := h.db.Preload("Author").Preload("Topic").First(&existingPost, existingPost.PostID).Error; err != nil {
+		log.Printf("Database error in UpdatePost (preloading relationships): %v", err)
+		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+		return
+	}
+
 	RespondWithJSON(w, http.StatusOK, existingPost)
 }
 

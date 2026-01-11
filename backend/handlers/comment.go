@@ -177,6 +177,12 @@ func (h *CommentHandler) UpdateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := h.db.Preload("Author").First(&existingComment, existingComment.CommentID).Error; err != nil {
+		log.Printf("Database error in UpdateComment (preloading author): %v", err)
+		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+		return
+	}
+
 	RespondWithJSON(w, http.StatusOK, existingComment)
 }
 

@@ -46,6 +46,12 @@ export default function PostView() {
     setComments((prev) => [...prev, newComment]);
   };
 
+  const handleCommentUpdated = (updatedComment: Comment) => {
+    setComments((prev) =>
+      prev.map((c) => (c.comment_id === updatedComment.comment_id ? updatedComment : c))
+    );
+  };
+
   const handleCommentDeleted = (commentId: number) => {
     setComments((prev) => prev.filter((c) => c.comment_id !== commentId));
   };
@@ -100,6 +106,7 @@ export default function PostView() {
                 key={comment.comment_id}
                 comment={comment}
                 onDelete={handleCommentDeleted}
+                onUpdate={handleCommentUpdated}
                 variant="detail"
               />
             ))}

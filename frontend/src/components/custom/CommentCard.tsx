@@ -15,19 +15,38 @@ import { useAuth } from '@/contexts/AuthContext';
 import { deleteComment } from '@/api/comments';
 import CommentCardListView from './CommentCardListView';
 import CommentCardDetailView from './CommentCardDetailView';
+import CommentCardEdit from './CommentCardEdit';
 
 interface CommentCardProps {
   comment: Comment;
   onDelete?: (commentId: number) => void;
+  onUpdate?: (updatedComment: Comment) => void;
   variant?: 'list' | 'detail';
 }
 
-export default function CommentCard({ comment, onDelete, variant = 'detail' }: CommentCardProps) {
+export default function CommentCard({ comment, onDelete, onUpdate, variant = 'detail' }: CommentCardProps) {
   const { currentUserId } = useAuth();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const isAuthor = currentUserId !== null && comment.author_id === currentUserId;
+
+  const handleEditClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  const handleUpdate = (updatedComment: Comment) => {
+    setIsEditing(false);
+    if (onUpdate) {
+      onUpdate(updatedComment);
+    }
+  };
 
   const handleDeleteClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -52,10 +71,13 @@ export default function CommentCard({ comment, onDelete, variant = 'detail' }: C
 
   return (
     <>
-      {variant === 'detail' ? (
+      {isEditing ? (
+        <CommentCardEdit comment={comment} onCancel={handleCancelEdit} onUpdate={handleUpdate} />
+      ) : variant === 'detail' ? (
         <CommentCardDetailView
           comment={comment}
           isAuthor={isAuthor}
+          onEditClick={handleEditClick}
           onDeleteClick={handleDeleteClick}
         />
       ) : (
