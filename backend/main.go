@@ -15,6 +15,9 @@ func main() {
 	log.Println("Loading environment variables...")
 	utils.LoadEnv()
 
+	log.Println("Validating JWT configuration...")
+	utils.ValidateJWTEnv()
+
 	log.Println("Connecting to database...")
 	db := database.Connect()
 

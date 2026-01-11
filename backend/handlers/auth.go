@@ -93,11 +93,21 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: Generate JWT token once GenerateJWT is implemented
-	RespondWithJSON(w, http.StatusCreated, user)
+	token, err := utils.GenerateJWT(user.UserID, user.Username, user.Role)
+	if err != nil {
+		log.Printf("Error generating JWT in Register: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+		return
+	}
+
+	response := AuthResponse{
+		User:  user,
+		Token: token,
+	}
+	RespondWithJSON(w, http.StatusCreated, response)
 }
 
-// Login authenticates a user and returns a JWT token
+// Authenticates a user and returns a JWT token
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req LoginRequest
 
@@ -128,6 +138,16 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: Generate JWT token once GenerateJWT is implemented
-	RespondWithJSON(w, http.StatusOK, user)
+	token, err := utils.GenerateJWT(user.UserID, user.Username, user.Role)
+	if err != nil {
+		log.Printf("Error generating JWT in Login: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+		return
+	}
+
+	response := AuthResponse{
+		User:  user,
+		Token: token,
+	}
+	RespondWithJSON(w, http.StatusOK, response)
 }
