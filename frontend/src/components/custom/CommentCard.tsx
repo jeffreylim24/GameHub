@@ -1,9 +1,6 @@
+import type { MouseEvent } from 'react';
 import { useState } from 'react';
 import type { Comment } from '@/types';
-import { Link } from 'react-router-dom';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,21 +11,28 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { deleteComment } from '@/api/comments';
+import CommentCardListView from './CommentCardListView';
+import CommentCardDetailView from './CommentCardDetailView';
 
 interface CommentCardProps {
   comment: Comment;
   onDelete?: (commentId: number) => void;
+  variant?: 'list' | 'detail';
 }
 
-export default function CommentCard({ comment, onDelete }: CommentCardProps) {
+export default function CommentCard({ comment, onDelete, variant = 'detail' }: CommentCardProps) {
   const { currentUserId } = useAuth();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const isAuthor = currentUserId !== null && comment.author_id === currentUserId;
+
+  const handleDeleteClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setShowDeleteDialog(true);
+  };
 
   const handleDeleteConfirm = async () => {
     try {
@@ -45,58 +49,20 @@ export default function CommentCard({ comment, onDelete }: CommentCardProps) {
       setIsDeleting(false);
     }
   };
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {comment.author?.username ? (
-                <Link
-                  to={`/user/${comment.author.user_id}`}
-                  className="font-semibold hover:underline"
-                >
-                  {comment.author.username}
-                </Link>
-              ) : (
-                <span className="font-semibold">Anonymous</span>
-              )}
-              <span className="text-sm text-gray-500">
-                {formatDate(comment.created_at)}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              {comment.has_spoilers && (
-                <Badge variant="destructive">Spoilers</Badge>
-              )}
-              {isAuthor && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setShowDeleteDialog(true)}
-                  className="h-8 w-8"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <p className="text-gray-700 whitespace-pre-wrap">{comment.content}</p>
-        </CardContent>
-      </Card>
+      {variant === 'detail' ? (
+        <CommentCardDetailView
+          comment={comment}
+          isAuthor={isAuthor}
+          onDeleteClick={handleDeleteClick}
+        />
+      ) : (
+        <CommentCardListView
+          comment={comment}
+        />
+      )}
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>

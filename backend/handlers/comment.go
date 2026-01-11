@@ -101,7 +101,7 @@ func (h *CommentHandler) GetComments(w http.ResponseWriter, r *http.Request) {
 		query = query.Where("author_id = ?", authorID)
 	}
 
-	result := query.Preload("Author").Order("created_at ASC").Find(&comments)
+	result := query.Preload("Author").Preload("Post.Topic").Order("created_at ASC").Find(&comments)
 	if result.Error != nil {
 		log.Printf("Database error in GetComments: %v", result.Error)
 		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
@@ -116,7 +116,7 @@ func (h *CommentHandler) GetComment(w http.ResponseWriter, r *http.Request) {
 	commentID := chi.URLParam(r, "id")
 	var comment models.Comment
 
-	result := h.db.Preload("Author").First(&comment, commentID)
+	result := h.db.Preload("Author").Preload("Post.Topic").First(&comment, commentID)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			RespondWithError(w, http.StatusNotFound, ErrCommentNotFound)

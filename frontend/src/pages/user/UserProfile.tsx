@@ -66,10 +66,6 @@ export default function UserProfile() {
     fetchProfile();
   }, [userId]);
 
-  const handleCommentDeleted = (commentId: number) => {
-    setComments((prev) => prev.filter((c) => c.comment_id !== commentId));
-  };
-
   const handleDeleteAccount = async () => {
     if (!user) return;
 
@@ -82,6 +78,7 @@ export default function UserProfile() {
     } catch (err) {
       console.error('Failed to delete account:', err);
       toast.error('Failed to delete account. Please try again.');
+    } finally {
       setIsDeleting(false);
     }
   };
@@ -181,7 +178,7 @@ export default function UserProfile() {
           ) : (
             <div className="space-y-3">
               {comments.map((comment) => (
-                <CommentCard key={comment.comment_id} comment={comment} onDelete={handleCommentDeleted} />
+                <CommentCard key={comment.comment_id} comment={comment} variant="list" />
               ))}
             </div>
           )}

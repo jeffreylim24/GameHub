@@ -100,6 +100,7 @@ export default function PostView() {
                 key={comment.comment_id}
                 comment={comment}
                 onDelete={handleCommentDeleted}
+                variant="detail"
               />
             ))}
           </div>
