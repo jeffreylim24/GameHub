@@ -14,6 +14,11 @@ const (
 	ErrCreatorNotExist = "Creator user does not exist"
 )
 
+// Auth-related error messages
+const (
+	ErrInvalidCredentials = "Invalid username or password"
+)
+
 // Topic-related error messages
 const (
 	ErrTopicNotFound    = "Topic not found"

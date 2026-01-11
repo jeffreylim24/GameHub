@@ -59,12 +59,15 @@ func SetupRouter(db *gorm.DB) http.Handler {
 	})
 
 	userHandler := handlers.NewUserHandler(db)
+	authHandler := handlers.NewAuthHandler(db)
 	topicHandler := handlers.NewTopicHandler(db)
 	postHandler := handlers.NewPostHandler(db)
 	commentHandler := handlers.NewCommentHandler(db)
 
 	r.Route("/api", func(r chi.Router) {
-		r.Post("/users", userHandler.CreateUser)
+		r.Post("/auth/register", authHandler.Register)
+		r.Post("/auth/login", authHandler.Login)
+
 		r.Get("/users", userHandler.GetUsers)
 		r.Get("/users/{id}", userHandler.GetUser)
 		r.Put("/users/{id}", userHandler.UpdateUser)

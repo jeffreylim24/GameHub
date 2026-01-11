@@ -21,35 +21,6 @@ func NewUserHandler(db *gorm.DB) *UserHandler {
 	return &UserHandler{db: db}
 }
 
-// Creates a new user
-func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var user models.User
-
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		RespondWithError(w, http.StatusBadRequest, ErrInvalidRequestPayload)
-		return
-	}
-
-	if errMsg := validation.ValidateUsername(user.Username); errMsg != "" {
-		RespondWithError(w, http.StatusBadRequest, errMsg)
-		return
-	}
-
-	result := h.db.Create(&user)
-	if result.Error != nil {
-		if validation.IsUniqueConstraintError(result.Error) {
-			RespondWithError(w, http.StatusConflict, ErrUsernameExists)
-			return
-		}
-
-		log.Printf("Database error in CreateUser: %v", result.Error)
-		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
-		return
-	}
-
-	RespondWithJSON(w, http.StatusCreated, user)
-}
-
 // Retrieves all users or a specific user by username query parameter
 func (h *UserHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("username")

@@ -1,6 +1,8 @@
 package validation
 
-import "strings"
+import (
+	"strings"
+)
 
 // Checks if a username is valid
 // Returns an error message if invalid, empty string if valid
@@ -16,5 +18,28 @@ func ValidateUsername(username string) string {
 		return ErrUsernameMaxLength
 	}
 
+	return ""
+}
+
+// Checks if a password is valid
+// Returns an error message if invalid, empty string if valid
+func ValidatePassword(password string) string {
+	if len(password) == 0 {
+		return ErrPasswordRequired
+	}
+	if len(password) < PasswordMinLength {
+		return ErrPasswordMinLength
+	}
+	if len(password) > PasswordMaxLength {
+		return ErrPasswordMaxLength
+	}
+
+	return ""
+}
+
+func ValidateRole(role string) string {
+	if role != "user" && role != "admin" {
+		return ErrInvalidRole
+	}
 	return ""
 }
