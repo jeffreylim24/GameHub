@@ -48,6 +48,7 @@ export interface Comment {
   content: string;
   has_spoilers: boolean;
   author?: User;
+  post?: Post;
   created_at: string;
   updated_at: string;
 }

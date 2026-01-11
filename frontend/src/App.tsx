@@ -21,7 +21,7 @@ function App() {
           <Route path="/topics/:topicId" element={<TopicPosts />} />
           <Route path="/topics/:topicId/posts/:postId" element={<PostView />} />
           <Route path="/posts/new" element={<NewPost />} />
-          <Route path="/user/:username" element={<UserProfile />} />
+          <Route path="/user/:userId" element={<UserProfile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
         </Routes>

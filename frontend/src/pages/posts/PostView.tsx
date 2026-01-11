@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getPost } from '@/api/posts';
 import { getComments } from '@/api/comments';
 import type { Post, Comment } from '@/types';
+import PostCard from '@/components/custom/PostCard';
 import CommentCard from '@/components/custom/CommentCard';
 import CommentForm from '@/components/custom/CommentForm';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 
 export default function PostView() {
   const { postId } = useParams<{ postId: string }>();
+  const navigate = useNavigate();
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -46,15 +46,22 @@ export default function PostView() {
     setComments((prev) => [...prev, newComment]);
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+  const handleCommentUpdated = (updatedComment: Comment) => {
+    setComments((prev) =>
+      prev.map((c) => (c.comment_id === updatedComment.comment_id ? updatedComment : c))
+    );
+  };
+
+  const handleCommentDeleted = (commentId: number) => {
+    setComments((prev) => prev.filter((c) => c.comment_id !== commentId));
+  };
+
+  const handlePostDeleted = () => {
+    navigate(`/topics/${post?.topic_id}`);
+  };
+
+  const handlePostUpdated = (updatedPost: Post) => {
+    setPost(updatedPost);
   };
 
   if (isLoading) {
@@ -77,53 +84,7 @@ export default function PostView() {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <CardTitle className="text-2xl mb-2">{post.title}</CardTitle>
-              <CardDescription>
-                Posted by{' '}
-                {post.author?.username ? (
-                  <Link
-                    to={`/user/${post.author.username}`}
-                    className="font-semibold hover:underline"
-                  >
-                    {post.author.username}
-                  </Link>
-                ) : (
-                  <strong>Anonymous</strong>
-                )}
-                {' on '}
-                {formatDate(post.created_at)}
-                {' in '}
-                <Link
-                  to={`/topics/${post.topic_id}`}
-                  className="font-semibold hover:underline"
-                >
-                  {post.topic?.title}
-                </Link>
-              </CardDescription>
-            </div>
-            <div className="flex flex-col gap-2 items-end">
-              {post.category && (
-                <Badge variant="secondary">{post.category}</Badge>
-              )}
-              {post.platform && (
-                <Badge variant="outline">{post.platform}</Badge>
-              )}
-              {post.has_spoilers && (
-                <Badge variant="destructive">Spoilers</Badge>
-              )}
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-            {post.content}
-          </p>
-        </CardContent>
-      </Card>
+      <PostCard post={post} variant="detail" onDelete={handlePostDeleted} onUpdate={handlePostUpdated} />
 
       <Separator />
 
@@ -141,7 +102,13 @@ export default function PostView() {
         ) : (
           <div className="space-y-3">
             {comments.map((comment) => (
-              <CommentCard key={comment.comment_id} comment={comment} />
+              <CommentCard
+                key={comment.comment_id}
+                comment={comment}
+                onDelete={handleCommentDeleted}
+                onUpdate={handleCommentUpdated}
+                variant="detail"
+              />
             ))}
           </div>
         )}
