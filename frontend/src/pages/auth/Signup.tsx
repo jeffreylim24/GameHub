@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useAuth } from '@/contexts/AuthContext';
-import { createUser } from '@/api/users';
+import { register as registerAPI } from '@/api/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,8 +17,18 @@ const signupSchema = z.object({
     .transform(s => s.trim())
     .pipe(z.string()
       .min(3, 'Username must be at least 3 characters')
-      .max(50, 'Username must not exceed 50 characters'))
-})
+      .max(50, 'Username must not exceed 50 characters')),
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .max(72, 'Password must not exceed 72 characters'),
+  confirmPassword: z
+    .string()
+    .min(1, 'Please confirm your password'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ['confirmPassword'],
+});
 
 type SignupFormData = z.infer<typeof signupSchema>;
 
@@ -36,6 +46,8 @@ export default function Signup() {
     resolver: zodResolver(signupSchema),
     defaultValues: {
       username: '',
+      password: '',
+      confirmPassword: '',
     },
   });
 
@@ -44,12 +56,16 @@ export default function Signup() {
     setIsLoading(true);
 
     try {
-      const newUser = await createUser({ username: data.username });
-      login(newUser);
+      const response = await registerAPI({
+        username: data.username,
+        password: data.password
+      });
+
+      login(response.user, response.token);
       navigate('/');
     } catch (err: any) {
       console.error('Signup error:', err);
-      
+
       if (err.response?.data?.error) {
         setError(err.response.data.error);
       } else {
@@ -84,6 +100,38 @@ export default function Signup() {
               {errors.username && (
                 <p className="text-sm text-red-500">
                   {errors.username.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Choose a password (8-72 characters)"
+                {...register('password')}
+                disabled={isLoading}
+              />
+              {errors.password && (
+                <p className="text-sm text-red-500">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="Confirm your password"
+                {...register('confirmPassword')}
+                disabled={isLoading}
+              />
+              {errors.confirmPassword && (
+                <p className="text-sm text-red-500">
+                  {errors.confirmPassword.message}
                 </p>
               )}
             </div>

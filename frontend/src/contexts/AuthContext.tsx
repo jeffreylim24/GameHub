@@ -1,6 +1,5 @@
 /**
  * Authentication context for managing user sessions.
- * Provides username-based authentication without passwords.
  *
  * @module
  */
@@ -12,15 +11,18 @@ interface AuthContextType {
   currentUser: User | null;
   currentUserId: number | null;
   username: string | null;
+  role: string | null;
   isAuthenticated: boolean;
+  isAdmin: boolean;
 
-  login: (user: User) => void;
+  login: (user: User, token: string) => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AUTH_STORAGE_KEY = 'gamehub_user';
+const TOKEN_STORAGE_KEY = 'gamehub_token';
 
 /**
  * AuthProvider component that wraps the app and provides auth state.
@@ -30,32 +32,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const storedUser = localStorage.getItem(AUTH_STORAGE_KEY);
-    if (storedUser) {
+    const storedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
+
+    if (storedUser && storedToken) {
       try {
         const user = JSON.parse(storedUser) as User;
         setCurrentUser(user);
       } catch (error) {
         console.error('Failed to parse stored user:', error);
         localStorage.removeItem(AUTH_STORAGE_KEY);
+        localStorage.removeItem(TOKEN_STORAGE_KEY);
       }
     }
   }, []);
 
-  const login = (user: User) => {
+  useEffect(() => {
+    const handleAutoLogout = () => {
+      setCurrentUser(null);
+    };
+
+    window.addEventListener('auth:logout', handleAutoLogout);
+    return () => window.removeEventListener('auth:logout', handleAutoLogout);
+  }, []);
+
+  const login = (user: User, token: string) => {
     setCurrentUser(user);
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+    localStorage.setItem(TOKEN_STORAGE_KEY, token);
   };
 
   const logout = () => {
     setCurrentUser(null);
     localStorage.removeItem(AUTH_STORAGE_KEY);
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
   };
 
   const value: AuthContextType = {
     currentUser,
     currentUserId: currentUser?.user_id ?? null,
     username: currentUser?.username ?? null,
+    role: currentUser?.role ?? null,
     isAuthenticated: currentUser !== null,
+    isAdmin: currentUser?.role === 'admin',
     login,
     logout,
   };

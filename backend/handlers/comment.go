@@ -144,7 +144,7 @@ func (h *CommentHandler) UpdateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if claims.UserID != *existingComment.AuthorID && claims.Role != ROLE_ADMIN {
+	if existingComment.AuthorID == nil || (claims.UserID != *existingComment.AuthorID && claims.Role != ROLE_ADMIN) {
 		RespondWithError(w, http.StatusForbidden, "You can only update your own comment")
 		return
 	}
@@ -206,13 +206,13 @@ func (h *CommentHandler) DeleteComment(w http.ResponseWriter, r *http.Request) {
 			RespondWithError(w, http.StatusNotFound, ErrCommentNotFound)
 			return
 		}
-		log.Printf("Database error in UpdateComment: %v", result.Error)
+		log.Printf("Database error in DeleteComment: %v", result.Error)
 		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
 		return
 	}
 
-	if claims.UserID != *existingComment.AuthorID && claims.Role != ROLE_ADMIN {
-		RespondWithError(w, http.StatusForbidden, "You can only update your own comment")
+	if existingComment.AuthorID == nil || (claims.UserID != *existingComment.AuthorID && claims.Role != ROLE_ADMIN) {
+		RespondWithError(w, http.StatusForbidden, "You can only delete your own comment")
 		return
 	}
 
