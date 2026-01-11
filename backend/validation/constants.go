@@ -6,6 +6,8 @@ import "fmt"
 const (
 	UsernameMinLength = 3
 	UsernameMaxLength = 50
+	PasswordMinLength = 8
+	PasswordMaxLength = 72 // bcrypt max
 )
 
 // User validation error messages
@@ -13,6 +15,10 @@ var (
 	ErrUsernameRequired  = "Username is required"
 	ErrUsernameMinLength = fmt.Sprintf("Username must be at least %d characters long", UsernameMinLength)
 	ErrUsernameMaxLength = fmt.Sprintf("Username must not exceed %d characters", UsernameMaxLength)
+	ErrPasswordRequired  = "Password is required"
+	ErrPasswordMinLength = fmt.Sprintf("Password must be at least %d characters long", PasswordMinLength)
+	ErrPasswordMaxLength = fmt.Sprintf("Password must not exceed %d characters", PasswordMaxLength)
+	ErrInvalidRole       = "Invalid role. Must be 'user' or 'admin'" // TODO: Extract valid roles into constant
 )
 
 // Topic validation constants

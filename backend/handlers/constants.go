@@ -1,5 +1,16 @@
 package handlers
 
+// ContextKey is a type for context keys to avoid collisions
+type ContextKey string
+
+const UserContextKey ContextKey = "user"
+
+// General
+const (
+	ROLE_USER  = "user"
+	ROLE_ADMIN = "admin" // Make sure to restrict admin account creation appropriately
+)
+
 // Common error messages
 const (
 	ErrInvalidRequestPayload = "Invalid request payload"
@@ -12,6 +23,11 @@ const (
 	ErrUserNotFound    = "User not found"
 	ErrUsernameExists  = "Username already exists"
 	ErrCreatorNotExist = "Creator user does not exist"
+)
+
+// Auth-related error messages
+const (
+	ErrInvalidCredentials = "Invalid username or password"
 )
 
 // Topic-related error messages

@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jeffreylim24/GameHub/models"
+	"github.com/jeffreylim24/GameHub/utils"
 	"github.com/jeffreylim24/GameHub/validation"
 	"gorm.io/gorm"
 )
@@ -19,35 +20,6 @@ type UserHandler struct {
 // Constructor for UserHandler
 func NewUserHandler(db *gorm.DB) *UserHandler {
 	return &UserHandler{db: db}
-}
-
-// Creates a new user
-func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var user models.User
-
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		RespondWithError(w, http.StatusBadRequest, ErrInvalidRequestPayload)
-		return
-	}
-
-	if errMsg := validation.ValidateUsername(user.Username); errMsg != "" {
-		RespondWithError(w, http.StatusBadRequest, errMsg)
-		return
-	}
-
-	result := h.db.Create(&user)
-	if result.Error != nil {
-		if validation.IsUniqueConstraintError(result.Error) {
-			RespondWithError(w, http.StatusConflict, ErrUsernameExists)
-			return
-		}
-
-		log.Printf("Database error in CreateUser: %v", result.Error)
-		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
-		return
-	}
-
-	RespondWithJSON(w, http.StatusCreated, user)
 }
 
 // Retrieves all users or a specific user by username query parameter
@@ -107,6 +79,12 @@ func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	userID := chi.URLParam(r, "id")
 
+	claims, ok := r.Context().Value(ContextKey("user")).(*utils.Claims)
+	if !ok {
+		RespondWithError(w, http.StatusUnauthorized, "Authentication required")
+		return
+	}
+
 	var existingUser models.User
 	result := h.db.First(&existingUser, userID)
 	if result.Error != nil {
@@ -116,6 +94,11 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Database error in UpdateUser: %v", result.Error)
 			RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
 		}
+		return
+	}
+
+	if claims.UserID != existingUser.UserID && claims.Role != ROLE_ADMIN {
+		RespondWithError(w, http.StatusForbidden, "You can only update your own account")
 		return
 	}
 
@@ -156,15 +139,33 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	userID := chi.URLParam(r, "id")
 
-	result := h.db.Delete(&models.User{}, userID)
-	if result.Error != nil {
-		log.Printf("Database error in DeleteUser: %v", result.Error)
-		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+	claims, ok := r.Context().Value(ContextKey("user")).(*utils.Claims)
+	if !ok {
+		RespondWithError(w, http.StatusUnauthorized, "Authentication required")
 		return
 	}
 
-	if result.RowsAffected == 0 {
-		RespondWithError(w, http.StatusNotFound, ErrUserNotFound)
+	var existingUser models.User
+	result := h.db.First(&existingUser, userID)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			RespondWithError(w, http.StatusNotFound, ErrUserNotFound)
+		} else {
+			log.Printf("Database error in DeleteUser: %v", result.Error)
+			RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+		}
+		return
+	}
+
+	if claims.UserID != existingUser.UserID && claims.Role != ROLE_ADMIN {
+		RespondWithError(w, http.StatusForbidden, "You can only delete your own account")
+		return
+	}
+
+	result = h.db.Delete(&existingUser)
+	if result.Error != nil {
+		log.Printf("Database error in DeleteUser: %v", result.Error)
+		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
 		return
 	}
 
