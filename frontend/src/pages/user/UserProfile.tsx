@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getUserByUsername } from '@/api/users';
+import { getUser } from '@/api/users';
 import { getPosts } from '@/api/posts';
 import { getComments } from '@/api/comments';
 import type { User, Post, Comment } from '@/types';
@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 // TODO: Implement pagination for posts and comments if needed
 export default function UserProfile() {
-  const { username } = useParams<{ username: string }>();
+  const { userId } = useParams<{ userId: string }>();
   const [user, setUser] = useState<User | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -20,7 +20,7 @@ export default function UserProfile() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!username) {
+      if (!userId) {
         setError('User not found');
         setIsLoading(false);
         return;
@@ -28,7 +28,7 @@ export default function UserProfile() {
 
       try {
         setIsLoading(true);
-        const userData = await getUserByUsername(username);
+        const userData = await getUser(Number(userId));
         const [postsData, commentsData] = await Promise.all([
           getPosts({ author_id: userData.user_id }),
           getComments({ author_id: userData.user_id }),
@@ -47,7 +47,16 @@ export default function UserProfile() {
     };
 
     fetchProfile();
-  }, [username]);
+  }, [userId]);
+
+  const handlePostDeleted = (postId: number) => {
+    setPosts((prev) => prev.filter((p) => p.post_id !== postId));
+    setComments((prev) => prev.filter((c) => c.post_id !== postId));
+  };
+
+  const handleCommentDeleted = (commentId: number) => {
+    setComments((prev) => prev.filter((c) => c.comment_id !== commentId));
+  };
 
   const formatJoinDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -97,7 +106,7 @@ export default function UserProfile() {
           ) : (
             <div className="space-y-4">
               {posts.map((post) => (
-                <PostCard key={post.post_id} post={post} />
+                <PostCard key={post.post_id} post={post} onDelete={handlePostDeleted} />
               ))}
             </div>
           )}
@@ -111,7 +120,7 @@ export default function UserProfile() {
           ) : (
             <div className="space-y-3">
               {comments.map((comment) => (
-                <CommentCard key={comment.comment_id} comment={comment} />
+                <CommentCard key={comment.comment_id} comment={comment} onDelete={handleCommentDeleted} />
               ))}
             </div>
           )}

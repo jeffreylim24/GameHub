@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { LogOut, User } from 'lucide-react';
 
 export default function AuthSection() {
-  const { isAuthenticated, username, logout } = useAuth();
+  const { isAuthenticated, currentUserId, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -16,7 +16,7 @@ export default function AuthSection() {
     return (
       <div className="flex items-center gap-2">
         <Button asChild variant="outline" size="icon-sm">
-          <Link to={`/user/${username}`} aria-label="View profile">
+          <Link to={`/user/${currentUserId}`} aria-label="View profile">
             <User />
           </Link>
         </Button>
