@@ -66,6 +66,16 @@ export default function Topics() {
     );
   }
 
+  const handleDeleteTopic = (topicId: number) => {
+    setTopics((prevTopics) => prevTopics.filter((t) => t.topic_id !== topicId));
+  };
+
+  const handleUpdateTopic = (updatedTopic: Topic) => {
+    setTopics((prevTopics) =>
+      prevTopics.map((t) => (t.topic_id === updatedTopic.topic_id ? updatedTopic : t))
+    );
+  };
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
@@ -80,7 +90,12 @@ export default function Topics() {
 
       <div className="space-y-4">
         {topics.map((topic) => (
-          <TopicCard key={topic.topic_id} topic={topic} />
+          <TopicCard
+            key={topic.topic_id}
+            topic={topic}
+            onDelete={handleDeleteTopic}
+            onUpdate={handleUpdateTopic}
+          />
         ))}
       </div>
 
