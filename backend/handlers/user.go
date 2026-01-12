@@ -79,7 +79,7 @@ func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	userID := chi.URLParam(r, "id")
 
-	claims, ok := r.Context().Value(ContextKey("user")).(*utils.Claims)
+	claims, ok := r.Context().Value(UserContextKey).(*utils.Claims)
 	if !ok {
 		RespondWithError(w, http.StatusUnauthorized, "Authentication required")
 		return
@@ -139,7 +139,7 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	userID := chi.URLParam(r, "id")
 
-	claims, ok := r.Context().Value(ContextKey("user")).(*utils.Claims)
+	claims, ok := r.Context().Value(UserContextKey).(*utils.Claims)
 	if !ok {
 		RespondWithError(w, http.StatusUnauthorized, "Authentication required")
 		return

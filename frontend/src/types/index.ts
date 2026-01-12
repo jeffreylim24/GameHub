@@ -4,6 +4,7 @@
 export interface User {
   user_id: number;
   username: string;
+  role: string;
   created_at: string;
 }
 
@@ -64,10 +65,27 @@ export type PostCategory = 'Discussion' | 'Question' | 'Review' | 'Highlight' | 
 export type PostPlatform = 'PC' | 'PlayStation' | 'Xbox' | 'Nintendo Switch';
 
 /**
- * Request payload for user creation.
+ * Request payload for user registration.
  */
-export interface CreateUserRequest {
+export interface RegisterRequest {
   username: string;
+  password: string;
+}
+
+/**
+ * Request payload for user login.
+ */
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+/**
+ * Authentication response containing user data and JWT token.
+ */
+export interface AuthResponse {
+  user: User;
+  token: string;
 }
 
 /**

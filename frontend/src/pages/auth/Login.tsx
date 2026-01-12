@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { getUserByUsername } from '@/api/users';
+import { login as loginAPI } from '@/api/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function Login() {
   const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
@@ -24,20 +25,25 @@ export default function Login() {
       return;
     }
 
+    if (!password.trim()) {
+      setError('Please enter a password');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const user = await getUserByUsername(username.trim());
+      const response = await loginAPI({ username: username.trim(), password });
 
-      login(user);
+      login(response.user, response.token);
       navigate('/');
     } catch (err: any) {
       console.error('Login error:', err);
 
-      if (err.response?.status === 404) {
-        setError('Username not found. Please sign up first.');
+      if (err.response?.status === 401) {
+        setError('Invalid username or password');
       } else {
-        setError('Failed to login. Please try again.');
+        setError(err.response?.data?.error || 'Failed to login. Please try again.');
       }
     } finally {
       setIsLoading(false);
@@ -50,7 +56,7 @@ export default function Login() {
         <CardHeader>
           <CardTitle>Login</CardTitle>
           <CardDescription>
-            Enter your username to access GameHub
+            Enter your credentials to access GameHub
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -63,6 +69,18 @@ export default function Login() {
                 placeholder="Enter your username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
               />
             </div>

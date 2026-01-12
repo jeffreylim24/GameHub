@@ -162,7 +162,7 @@ func (h *PostHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if claims.UserID != *existingPost.AuthorID && claims.Role != ROLE_ADMIN {
+	if claims.Role != ROLE_ADMIN && (existingPost.AuthorID == nil || claims.UserID != *existingPost.AuthorID) {
 		RespondWithError(w, http.StatusForbidden, "You can only update your own post")
 		return
 	}
@@ -252,7 +252,7 @@ func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if claims.UserID != *existingPost.AuthorID && claims.Role != ROLE_ADMIN {
+	if claims.Role != ROLE_ADMIN && (existingPost.AuthorID == nil || claims.UserID != *existingPost.AuthorID) {
 		RespondWithError(w, http.StatusForbidden, "You can only delete your own post")
 		return
 	}

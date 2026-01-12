@@ -1,12 +1,6 @@
 /**
  * Configured Axios instance for GameHub API requests.
  *
- * Features:
- * - JSON content-type headers
- * - Configurable timeout via environment variables
- * - Request/response logging in development mode
- * - Centralized error handling and logging
- *
  * @module
  */
 
@@ -24,6 +18,11 @@ const axiosInstance = axios.create({
 // Request interceptor for logging
 axiosInstance.interceptors.request.use(
   (config) => {
+    const token = localStorage.getItem('gamehub_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
     if (IS_DEV) {
       console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`);
     }
@@ -50,6 +49,12 @@ axiosInstance.interceptors.response.use(
         message: error.response.data?.error || error.message,
         url: error.config?.url,
       });
+
+      if (error.response.status === 401) {
+        localStorage.removeItem('gamehub_token');
+        localStorage.removeItem('gamehub_user');
+        window.dispatchEvent(new Event('auth:logout'));
+      }
     } else if (error.request) {
       console.error('[Network Error] No response from server', error.message);
     } else {
