@@ -25,12 +25,12 @@ interface CommentCardProps {
 }
 
 export default function CommentCard({ comment, onDelete, onUpdate, variant = 'detail' }: CommentCardProps) {
-  const { currentUserId } = useAuth();
+  const { currentUserId, isAdmin } = useAuth();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  const isAuthor = currentUserId !== null && comment.author_id === currentUserId;
+  const isAuthorOrAdmin = (currentUserId !== null && comment.author_id === currentUserId) || isAdmin;
 
   const handleEditClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -76,7 +76,7 @@ export default function CommentCard({ comment, onDelete, onUpdate, variant = 'de
       ) : variant === 'detail' ? (
         <CommentCardDetailView
           comment={comment}
-          isAuthor={isAuthor}
+          isAuthor={isAuthorOrAdmin}
           onEditClick={handleEditClick}
           onDeleteClick={handleDeleteClick}
         />

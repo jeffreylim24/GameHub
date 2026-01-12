@@ -25,12 +25,12 @@ interface PostCardProps {
 }
 
 export default function PostCard({ post, onDelete, onUpdate, variant = 'list' }: PostCardProps) {
-  const { currentUserId } = useAuth();
+  const { currentUserId, isAdmin } = useAuth();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  const isAuthor = currentUserId !== null && post.author_id === currentUserId;
+  const isAuthorOrAdmin = (currentUserId !== null && post.author_id === currentUserId) || isAdmin;
 
   const handleEditClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -76,7 +76,7 @@ export default function PostCard({ post, onDelete, onUpdate, variant = 'list' }:
       ) : variant === 'detail' ? (
         <PostCardDetailView
           post={post}
-          isAuthor={isAuthor}
+          isAuthor={isAuthorOrAdmin}
           onEditClick={handleEditClick}
           onDeleteClick={handleDeleteClick}
         />

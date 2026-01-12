@@ -4,9 +4,9 @@ import { getTopic } from '@/api/topics';
 import { getPosts } from '@/api/posts';
 import type { Topic, Post } from '@/types';
 import PostCard from '@/components/custom/PostCard';
+import TopicCard from '@/components/custom/TopicCard';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 // TODO: Infinite scroll but find way to optimize performance for large number of posts
 export default function TopicPosts() {
@@ -59,16 +59,22 @@ export default function TopicPosts() {
     );
   }
 
+  const handleDeleteTopic = () => {
+    navigate('/topics');
+  };
+
+  const handleUpdateTopic = (updatedTopic: Topic) => {
+    setTopic(updatedTopic);
+  };
+
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-3xl">{topic.title}</CardTitle>
-          {topic.description && (
-            <CardDescription>{topic.description}</CardDescription>
-          )}
-        </CardHeader>
-      </Card>
+      <TopicCard
+        topic={topic}
+        clickable={false}
+        onDelete={handleDeleteTopic}
+        onUpdate={handleUpdateTopic}
+      />
 
       <div>
         <div className="mb-4 flex items-center justify-between">
