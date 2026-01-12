@@ -144,7 +144,7 @@ func (h *CommentHandler) UpdateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if existingComment.AuthorID == nil || (claims.UserID != *existingComment.AuthorID && claims.Role != ROLE_ADMIN) {
+	if claims.Role != ROLE_ADMIN && (existingComment.AuthorID == nil || claims.UserID != *existingComment.AuthorID) {
 		RespondWithError(w, http.StatusForbidden, "You can only update your own comment")
 		return
 	}
@@ -211,7 +211,7 @@ func (h *CommentHandler) DeleteComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if existingComment.AuthorID == nil || (claims.UserID != *existingComment.AuthorID && claims.Role != ROLE_ADMIN) {
+	if claims.Role != ROLE_ADMIN && (existingComment.AuthorID == nil || claims.UserID != *existingComment.AuthorID) {
 		RespondWithError(w, http.StatusForbidden, "You can only delete your own comment")
 		return
 	}
