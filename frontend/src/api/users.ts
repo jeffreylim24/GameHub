@@ -6,7 +6,7 @@
 import axiosInstance from '@/lib/axios';
 import type {
   User,
-  CreateUserRequest,
+  RegisterRequest,
   UpdateUserRequest,
 } from '@/types';
 
@@ -16,7 +16,7 @@ import type {
  * @returns Created user with generated ID and timestamp
  * @throws {AxiosError} On validation or network errors
  */
-export const createUser = async (data: CreateUserRequest): Promise<User> => {
+export const createUser = async (data: RegisterRequest): Promise<User> => {
   const response = await axiosInstance.post<User>('/users', data);
   return response.data;
 };
