@@ -27,7 +27,7 @@ func main() {
 	log.Println("Setting up router...")
 	r := routes.SetupRouter(db)
 
-	port := utils.GetEnv("SERVER_PORT", "8080")
+	port := utils.GetEnv("PORT", "8080")
 	serverAddr := fmt.Sprintf(":%s", port)
 	log.Printf("Server starting on %s", serverAddr)
 	log.Fatal(http.ListenAndServe(serverAddr, r))
