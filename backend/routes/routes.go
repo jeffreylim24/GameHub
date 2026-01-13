@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -46,8 +47,13 @@ func SetupRouter(db *gorm.DB) http.Handler {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RequestID)
+
+	// Log CORS configuration for debugging
+	allowedOrigins := getCORSAllowedOrigins()
+	log.Printf("CORS allowed origins: %v", allowedOrigins)
+
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   getCORSAllowedOrigins(),
+		AllowedOrigins:   allowedOrigins,
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
