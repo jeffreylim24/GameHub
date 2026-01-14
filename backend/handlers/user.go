@@ -14,11 +14,12 @@ import (
 	"gorm.io/gorm"
 )
 
+// UserHandler handles HTTP requests for user operations.
 type UserHandler struct {
 	db *gorm.DB
 }
 
-// Constructor for UserHandler
+// NewUserHandler creates a new UserHandler with the given database connection.
 func NewUserHandler(db *gorm.DB) *UserHandler {
 	return &UserHandler{db: db}
 }
@@ -50,7 +51,7 @@ func (h *UserHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusOK, response)
 }
 
-// Retrieves a single user by ID
+// GetUser returns a single user by ID.
 func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	userID := chi.URLParam(r, "id")
 	var user models.User
@@ -69,7 +70,7 @@ func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusOK, user)
 }
 
-// Updates an existing user
+// UpdateUser updates an existing user's username.
 func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	userID := chi.URLParam(r, "id")
 
@@ -129,7 +130,7 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusOK, existingUser)
 }
 
-// Deletes a user by ID
+// DeleteUser removes a user by ID.
 func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	userID := chi.URLParam(r, "id")
 

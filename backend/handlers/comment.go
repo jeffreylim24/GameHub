@@ -14,16 +14,17 @@ import (
 	"gorm.io/gorm"
 )
 
+// CommentHandler handles HTTP requests for comment operations.
 type CommentHandler struct {
 	db *gorm.DB
 }
 
-// Constructor for CommentHandler
+// NewCommentHandler creates a new CommentHandler with the given database connection.
 func NewCommentHandler(db *gorm.DB) *CommentHandler {
 	return &CommentHandler{db: db}
 }
 
-// Creates a new comment
+// CreateComment creates a new comment on a post.
 func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	claims, ok := r.Context().Value(UserContextKey).(*utils.Claims)
 	if !ok {
@@ -78,17 +79,10 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusCreated, comment)
 }
 
-// Retrieves all comments with pagination and optional filters
-// Query params:
-//   - page, page_size: pagination (default: page=1, page_size=20)
-//   - post_id, author_id: filters (all optional)
-//
-// Note: Comments are sorted ASC (oldest first) for chronological thread display
+// GetComments returns paginated comments with optional filters, sorted by oldest first.
 func (h *CommentHandler) GetComments(w http.ResponseWriter, r *http.Request) {
-	// Step 1: Parse pagination parameters
 	params := pagination.ParseParams(r)
 
-	// Step 2: Build query with filters
 	query := h.db.Model(&models.Comment{})
 
 	postID := r.URL.Query().Get("post_id")
@@ -101,7 +95,6 @@ func (h *CommentHandler) GetComments(w http.ResponseWriter, r *http.Request) {
 		query = query.Where("author_id = ?", authorID)
 	}
 
-	// Step 3: Count total matching comments
 	var totalCount int64
 	if err := query.Count(&totalCount).Error; err != nil {
 		log.Printf("Database error counting comments: %v", err)
@@ -109,8 +102,6 @@ func (h *CommentHandler) GetComments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Step 4: Fetch the page of data
-	// Note: ASC order keeps comments in chronological order (oldest first)
 	var comments []models.Comment
 	result := query.Preload("Author").Preload("Post.Topic").
 		Order("created_at ASC").
@@ -124,12 +115,11 @@ func (h *CommentHandler) GetComments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Step 5: Return paginated response
 	response := pagination.NewResponse(comments, params, totalCount)
 	RespondWithJSON(w, http.StatusOK, response)
 }
 
-// Retrieves a specific comment by ID
+// GetComment returns a single comment by ID.
 func (h *CommentHandler) GetComment(w http.ResponseWriter, r *http.Request) {
 	commentID := chi.URLParam(r, "id")
 	var comment models.Comment
@@ -148,7 +138,7 @@ func (h *CommentHandler) GetComment(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusOK, comment)
 }
 
-// Updates an existing comment
+// UpdateComment updates an existing comment's content or spoiler flag.
 func (h *CommentHandler) UpdateComment(w http.ResponseWriter, r *http.Request) {
 	commentID := chi.URLParam(r, "id")
 
@@ -215,7 +205,7 @@ func (h *CommentHandler) UpdateComment(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusOK, existingComment)
 }
 
-// Deletes a comment by ID
+// DeleteComment removes a comment by ID.
 func (h *CommentHandler) DeleteComment(w http.ResponseWriter, r *http.Request) {
 	commentID := chi.URLParam(r, "id")
 

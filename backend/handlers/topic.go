@@ -14,16 +14,17 @@ import (
 	"gorm.io/gorm"
 )
 
+// TopicHandler handles HTTP requests for topic operations.
 type TopicHandler struct {
 	db *gorm.DB
 }
 
-// Constructor for TopicHandler
+// NewTopicHandler creates a new TopicHandler with the given database connection.
 func NewTopicHandler(db *gorm.DB) *TopicHandler {
 	return &TopicHandler{db: db}
 }
 
-// Creates a new topic
+// CreateTopic creates a new topic (game).
 func (h *TopicHandler) CreateTopic(w http.ResponseWriter, r *http.Request) {
 	claims, ok := r.Context().Value(UserContextKey).(*utils.Claims)
 	if !ok {
@@ -64,15 +65,10 @@ func (h *TopicHandler) CreateTopic(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusCreated, topic)
 }
 
-// Retrieves all topics with pagination
-// Query params: ?page=1&page_size=20 (both optional, these are defaults)
+// GetTopics returns paginated topics sorted by newest first.
 func (h *TopicHandler) GetTopics(w http.ResponseWriter, r *http.Request) {
-	// Step 1: Parse pagination parameters from the request
-	// This extracts ?page=X&page_size=Y from the URL, with sensible defaults
 	params := pagination.ParseParams(r)
 
-	// Step 2: Count total topics BEFORE applying limit/offset
-	// We need this to calculate total pages and has_next/has_previous
 	var totalCount int64
 	if err := h.db.Model(&models.Topic{}).Count(&totalCount).Error; err != nil {
 		log.Printf("Database error counting topics: %v", err)
@@ -80,11 +76,6 @@ func (h *TopicHandler) GetTopics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Step 3: Fetch the actual page of data
-	// - Preload("Creator") loads the related User who created this topic
-	// - Order() sorts by newest first
-	// - Limit() restricts how many rows to return (page_size)
-	// - Offset() skips rows for previous pages
 	var topics []models.Topic
 	result := h.db.Preload("Creator").
 		Order("created_at DESC").
@@ -98,13 +89,11 @@ func (h *TopicHandler) GetTopics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Step 4: Build and return the paginated response
-	// This wraps the data with pagination metadata
 	response := pagination.NewResponse(topics, params, totalCount)
 	RespondWithJSON(w, http.StatusOK, response)
 }
 
-// Retrieves a single topic by ID
+// GetTopic returns a single topic by ID.
 func (h *TopicHandler) GetTopic(w http.ResponseWriter, r *http.Request) {
 	topicID := chi.URLParam(r, "id")
 	var topic models.Topic
@@ -124,7 +113,7 @@ func (h *TopicHandler) GetTopic(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusOK, topic)
 }
 
-// Updates an existing topic
+// UpdateTopic updates an existing topic's title or description.
 func (h *TopicHandler) UpdateTopic(w http.ResponseWriter, r *http.Request) {
 	topicID := chi.URLParam(r, "id")
 
@@ -182,7 +171,7 @@ func (h *TopicHandler) UpdateTopic(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusOK, existingTopic)
 }
 
-// Deletes a topic by ID
+// DeleteTopic removes a topic by ID.
 func (h *TopicHandler) DeleteTopic(w http.ResponseWriter, r *http.Request) {
 	topicID := chi.URLParam(r, "id")
 

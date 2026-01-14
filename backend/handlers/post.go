@@ -14,16 +14,17 @@ import (
 	"gorm.io/gorm"
 )
 
+// PostHandler handles HTTP requests for post operations.
 type PostHandler struct {
 	db *gorm.DB
 }
 
-// Constructor for PostHandler
+// NewPostHandler creates a new PostHandler with the given database connection.
 func NewPostHandler(db *gorm.DB) *PostHandler {
 	return &PostHandler{db: db}
 }
 
-// Creates a new post
+// CreatePost creates a new post within a topic.
 func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	claims, ok := r.Context().Value(UserContextKey).(*utils.Claims)
 	if !ok {
@@ -88,22 +89,12 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusCreated, post)
 }
 
-// Retrieves all posts with pagination and optional filters
-// Query params:
-//   - page, page_size: pagination (default: page=1, page_size=20)
-//   - topic_id, category, platform, author_id: filters (all optional)
-//
-// Example: ?topic_id=1&category=Discussion&page=2&page_size=10
+// GetPosts returns paginated posts with optional filters.
 func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
-	// Step 1: Parse pagination parameters
 	params := pagination.ParseParams(r)
 
-	// Step 2: Build a base query with filters
-	// We'll reuse this query for both counting and fetching
-	// This ensures the count matches the filtered results
 	query := h.db.Model(&models.Post{})
 
-	// Apply filters from query parameters
 	topicID := r.URL.Query().Get("topic_id")
 	category := r.URL.Query().Get("category")
 	platform := r.URL.Query().Get("platform")
@@ -122,8 +113,6 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 		query = query.Where("author_id = ?", authorID)
 	}
 
-	// Step 3: Count total matching posts (with filters applied!)
-	// Important: We count BEFORE adding Limit/Offset
 	var totalCount int64
 	if err := query.Count(&totalCount).Error; err != nil {
 		log.Printf("Database error counting posts: %v", err)
@@ -131,8 +120,6 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Step 4: Fetch the page of data
-	// Note: We add Preload, Order, Limit, Offset to the same query
 	var posts []models.Post
 	result := query.Preload("Author").Preload("Topic").
 		Order("created_at DESC").
@@ -146,12 +133,11 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Step 5: Return paginated response
 	response := pagination.NewResponse(posts, params, totalCount)
 	RespondWithJSON(w, http.StatusOK, response)
 }
 
-// Retrieves a single post by ID
+// GetPost returns a single post by ID.
 func (h *PostHandler) GetPost(w http.ResponseWriter, r *http.Request) {
 	postID := chi.URLParam(r, "id")
 	var post models.Post
@@ -170,7 +156,7 @@ func (h *PostHandler) GetPost(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusOK, post)
 }
 
-// Updates an existing post
+// UpdatePost updates an existing post's fields.
 func (h *PostHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	postID := chi.URLParam(r, "id")
 
@@ -260,7 +246,7 @@ func (h *PostHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusOK, existingPost)
 }
 
-// Deletes a post by ID
+// DeletePost removes a post by ID.
 func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 	postID := chi.URLParam(r, "id")
 
