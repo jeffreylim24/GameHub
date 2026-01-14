@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jeffreylim24/GameHub/models"
+	"github.com/jeffreylim24/GameHub/pagination"
 	"github.com/jeffreylim24/GameHub/utils"
 	"github.com/jeffreylim24/GameHub/validation"
 	"gorm.io/gorm"
@@ -22,38 +23,31 @@ func NewUserHandler(db *gorm.DB) *UserHandler {
 	return &UserHandler{db: db}
 }
 
-// Retrieves all users or a specific user by username query parameter
+// GetUsers returns paginated users.
 func (h *UserHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
-	username := r.URL.Query().Get("username")
+	params := pagination.ParseParams(r)
 
-	if username != "" {
-		var user models.User
-		result := h.db.Where("LOWER(username) = LOWER(?)", username).First(&user)
-
-		if result.Error != nil {
-			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-				RespondWithError(w, http.StatusNotFound, ErrUserNotFound)
-			} else {
-				log.Printf("Database error in GetUsers (username lookup): %v", result.Error)
-				RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
-			}
-			return
-		}
-
-		RespondWithJSON(w, http.StatusOK, user)
+	var totalCount int64
+	if err := h.db.Model(&models.User{}).Count(&totalCount).Error; err != nil {
+		log.Printf("Database error counting users: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
 		return
 	}
 
 	var users []models.User
+	result := h.db.Order("created_at DESC").
+		Limit(params.PageSize).
+		Offset(params.Offset).
+		Find(&users)
 
-	result := h.db.Find(&users)
 	if result.Error != nil {
 		log.Printf("Database error in GetUsers: %v", result.Error)
 		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
 		return
 	}
 
-	RespondWithJSON(w, http.StatusOK, users)
+	response := pagination.NewResponse(users, params, totalCount)
+	RespondWithJSON(w, http.StatusOK, response)
 }
 
 // Retrieves a single user by ID

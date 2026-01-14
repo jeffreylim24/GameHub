@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jeffreylim24/GameHub/models"
+	"github.com/jeffreylim24/GameHub/pagination"
 	"github.com/jeffreylim24/GameHub/utils"
 	"github.com/jeffreylim24/GameHub/validation"
 	"gorm.io/gorm"
@@ -63,18 +64,44 @@ func (h *TopicHandler) CreateTopic(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusCreated, topic)
 }
 
-// Retrieves all topics
+// Retrieves all topics with pagination
+// Query params: ?page=1&page_size=20 (both optional, these are defaults)
 func (h *TopicHandler) GetTopics(w http.ResponseWriter, r *http.Request) {
-	var topics []models.Topic
+	// Step 1: Parse pagination parameters from the request
+	// This extracts ?page=X&page_size=Y from the URL, with sensible defaults
+	params := pagination.ParseParams(r)
 
-	result := h.db.Preload("Creator").Order("created_at DESC").Find(&topics)
+	// Step 2: Count total topics BEFORE applying limit/offset
+	// We need this to calculate total pages and has_next/has_previous
+	var totalCount int64
+	if err := h.db.Model(&models.Topic{}).Count(&totalCount).Error; err != nil {
+		log.Printf("Database error counting topics: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+		return
+	}
+
+	// Step 3: Fetch the actual page of data
+	// - Preload("Creator") loads the related User who created this topic
+	// - Order() sorts by newest first
+	// - Limit() restricts how many rows to return (page_size)
+	// - Offset() skips rows for previous pages
+	var topics []models.Topic
+	result := h.db.Preload("Creator").
+		Order("created_at DESC").
+		Limit(params.PageSize).
+		Offset(params.Offset).
+		Find(&topics)
+
 	if result.Error != nil {
 		log.Printf("Database error in GetTopics: %v", result.Error)
 		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
 		return
 	}
 
-	RespondWithJSON(w, http.StatusOK, topics)
+	// Step 4: Build and return the paginated response
+	// This wraps the data with pagination metadata
+	response := pagination.NewResponse(topics, params, totalCount)
+	RespondWithJSON(w, http.StatusOK, response)
 }
 
 // Retrieves a single topic by ID

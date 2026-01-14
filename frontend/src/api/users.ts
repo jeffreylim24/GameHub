@@ -32,19 +32,6 @@ export const getUsers = async (): Promise<User[]> => {
 };
 
 /**
- * Retrieves a user by username.
- * @param username - Username to search for
- * @returns User object
- * @throws {AxiosError} On network errors or if user not found (404)
- */
-export const getUserByUsername = async (username: string): Promise<User> => {
-  const response = await axiosInstance.get<User>('/users', {
-    params: { username },
-  });
-  return response.data;
-};
-
-/**
  * Retrieves a user by ID.
  * @param id - User ID
  * @returns User object

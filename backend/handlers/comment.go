@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jeffreylim24/GameHub/models"
+	"github.com/jeffreylim24/GameHub/pagination"
 	"github.com/jeffreylim24/GameHub/utils"
 	"github.com/jeffreylim24/GameHub/validation"
 	"gorm.io/gorm"
@@ -77,10 +78,17 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusCreated, comment)
 }
 
-// Retrieves all comments
+// Retrieves all comments with pagination and optional filters
+// Query params:
+//   - page, page_size: pagination (default: page=1, page_size=20)
+//   - post_id, author_id: filters (all optional)
+//
+// Note: Comments are sorted ASC (oldest first) for chronological thread display
 func (h *CommentHandler) GetComments(w http.ResponseWriter, r *http.Request) {
-	var comments []models.Comment
+	// Step 1: Parse pagination parameters
+	params := pagination.ParseParams(r)
 
+	// Step 2: Build query with filters
 	query := h.db.Model(&models.Comment{})
 
 	postID := r.URL.Query().Get("post_id")
@@ -93,14 +101,32 @@ func (h *CommentHandler) GetComments(w http.ResponseWriter, r *http.Request) {
 		query = query.Where("author_id = ?", authorID)
 	}
 
-	result := query.Preload("Author").Preload("Post.Topic").Order("created_at ASC").Find(&comments)
+	// Step 3: Count total matching comments
+	var totalCount int64
+	if err := query.Count(&totalCount).Error; err != nil {
+		log.Printf("Database error counting comments: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+		return
+	}
+
+	// Step 4: Fetch the page of data
+	// Note: ASC order keeps comments in chronological order (oldest first)
+	var comments []models.Comment
+	result := query.Preload("Author").Preload("Post.Topic").
+		Order("created_at ASC").
+		Limit(params.PageSize).
+		Offset(params.Offset).
+		Find(&comments)
+
 	if result.Error != nil {
 		log.Printf("Database error in GetComments: %v", result.Error)
 		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
 		return
 	}
 
-	RespondWithJSON(w, http.StatusOK, comments)
+	// Step 5: Return paginated response
+	response := pagination.NewResponse(comments, params, totalCount)
+	RespondWithJSON(w, http.StatusOK, response)
 }
 
 // Retrieves a specific comment by ID
