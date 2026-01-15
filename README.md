@@ -1,5 +1,6 @@
 # GameHub
 GameHub -- a discussion forum for gamers
+
 By: Jeffrey Lim @ Htet Min Shein, A0300154Y
 
 ## Setup Instructions

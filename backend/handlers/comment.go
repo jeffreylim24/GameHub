@@ -8,21 +8,23 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jeffreylim24/GameHub/models"
+	"github.com/jeffreylim24/GameHub/pagination"
 	"github.com/jeffreylim24/GameHub/utils"
 	"github.com/jeffreylim24/GameHub/validation"
 	"gorm.io/gorm"
 )
 
+// CommentHandler handles HTTP requests for comment operations.
 type CommentHandler struct {
 	db *gorm.DB
 }
 
-// Constructor for CommentHandler
+// NewCommentHandler creates a new CommentHandler with the given database connection.
 func NewCommentHandler(db *gorm.DB) *CommentHandler {
 	return &CommentHandler{db: db}
 }
 
-// Creates a new comment
+// CreateComment creates a new comment on a post.
 func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	claims, ok := r.Context().Value(UserContextKey).(*utils.Claims)
 	if !ok {
@@ -77,9 +79,9 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusCreated, comment)
 }
 
-// Retrieves all comments
+// GetComments returns paginated comments with optional filters, sorted by oldest first.
 func (h *CommentHandler) GetComments(w http.ResponseWriter, r *http.Request) {
-	var comments []models.Comment
+	params := pagination.ParseParams(r)
 
 	query := h.db.Model(&models.Comment{})
 
@@ -93,17 +95,31 @@ func (h *CommentHandler) GetComments(w http.ResponseWriter, r *http.Request) {
 		query = query.Where("author_id = ?", authorID)
 	}
 
-	result := query.Preload("Author").Preload("Post.Topic").Order("created_at ASC").Find(&comments)
+	var totalCount int64
+	if err := query.Count(&totalCount).Error; err != nil {
+		log.Printf("Database error counting comments: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+		return
+	}
+
+	var comments []models.Comment
+	result := query.Preload("Author").Preload("Post.Topic").
+		Order("created_at ASC").
+		Limit(params.PageSize).
+		Offset(params.Offset).
+		Find(&comments)
+
 	if result.Error != nil {
 		log.Printf("Database error in GetComments: %v", result.Error)
 		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
 		return
 	}
 
-	RespondWithJSON(w, http.StatusOK, comments)
+	response := pagination.NewResponse(comments, params, totalCount)
+	RespondWithJSON(w, http.StatusOK, response)
 }
 
-// Retrieves a specific comment by ID
+// GetComment returns a single comment by ID.
 func (h *CommentHandler) GetComment(w http.ResponseWriter, r *http.Request) {
 	commentID := chi.URLParam(r, "id")
 	var comment models.Comment
@@ -122,7 +138,7 @@ func (h *CommentHandler) GetComment(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusOK, comment)
 }
 
-// Updates an existing comment
+// UpdateComment updates an existing comment's content or spoiler flag.
 func (h *CommentHandler) UpdateComment(w http.ResponseWriter, r *http.Request) {
 	commentID := chi.URLParam(r, "id")
 
@@ -189,7 +205,7 @@ func (h *CommentHandler) UpdateComment(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusOK, existingComment)
 }
 
-// Deletes a comment by ID
+// DeleteComment removes a comment by ID.
 func (h *CommentHandler) DeleteComment(w http.ResponseWriter, r *http.Request) {
 	commentID := chi.URLParam(r, "id")
 

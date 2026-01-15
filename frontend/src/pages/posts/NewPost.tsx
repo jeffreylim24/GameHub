@@ -99,8 +99,8 @@ export default function NewPost() {
   const fetchTopics = async () => {
     try {
       setIsLoadingTopics(true);
-      const fetchedTopics = await getTopics();
-      setTopics(fetchedTopics);
+      const response = await getTopics({ page_size: 1000 });
+      setTopics(response.data);
     } catch (err) {
       console.error('Failed to fetch topics:', err);
       setError('Failed to load topics. Please try again.');

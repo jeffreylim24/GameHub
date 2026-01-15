@@ -1,4 +1,15 @@
 /**
+ * @fileoverview TypeScript type definitions for GameHub API.
+ *
+ * Contains all shared types including:
+ * - Core entities (User, Topic, Post, Comment)
+ * - API request/response types
+ * - Pagination types
+ *
+ * @module types
+ */
+
+/**
  * User entity representing a forum member.
  */
 export interface User {
@@ -162,9 +173,42 @@ export interface ApiError {
 }
 
 /**
- * Query parameters for filtering posts.
+ * Pagination metadata returned by the API.
+ * Contains information about the current page and total results.
  */
-export interface GetPostsParams {
+export interface PaginationMetadata {
+  current_page: number;
+  page_size: number;
+  total_items: number;
+  total_pages: number;
+  has_next: boolean;
+  has_previous: boolean;
+}
+
+/**
+ * Generic paginated response wrapper.
+ * All list endpoints return this format.
+ * @template T - The type of items in the data array
+ */
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: PaginationMetadata;
+}
+
+/**
+ * Query parameters for pagination.
+ * Used when making requests to paginated endpoints.
+ */
+export interface PaginationParams {
+  page?: number;
+  page_size?: number;
+}
+
+/**
+ * Query parameters for filtering posts.
+ * Extends PaginationParams to support paginated requests.
+ */
+export interface GetPostsParams extends PaginationParams {
   topic_id?: number;
   author_id?: number;
   category?: PostCategory;
@@ -173,8 +217,21 @@ export interface GetPostsParams {
 
 /**
  * Query parameters for filtering comments.
+ * Extends PaginationParams to support paginated requests.
  */
-export interface GetCommentsParams {
+export interface GetCommentsParams extends PaginationParams {
   post_id?: number;
   author_id?: number;
 }
+
+/**
+ * Query parameters for fetching topics.
+ * Extends PaginationParams to support paginated requests.
+ */
+export interface GetTopicsParams extends PaginationParams {}
+
+/**
+ * Query parameters for fetching users.
+ * Extends PaginationParams to support paginated requests.
+ */
+export interface GetUsersParams extends PaginationParams {}

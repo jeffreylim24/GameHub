@@ -1,6 +1,14 @@
 /**
- * API service for comment operations.
- * @module
+ * @fileoverview API client for comment operations.
+ *
+ * Handles CRUD operations for post comments including:
+ * - Creating new comments on posts
+ * - Fetching comments with pagination (ordered oldest first for thread display)
+ * - Updating and deleting comments
+ *
+ * @module api/comments
+ * @see {@link Comment} for the comment data structure
+ * @see {@link GetCommentsParams} for available query filters
  */
 
 import axiosInstance from '@/lib/axios';
@@ -9,6 +17,7 @@ import type {
   CreateCommentRequest,
   UpdateCommentRequest,
   GetCommentsParams,
+  PaginatedResponse,
 } from '@/types';
 
 /**
@@ -26,14 +35,17 @@ export const createComment = async (
 
 /**
  * Retrieves comments ordered by creation date (oldest first).
- * @param params - Optional filter for post_id
- * @returns Array of comments with preloaded author information
+ * @param params - Optional filter for post_id and pagination
+ * @returns Paginated response with comments and pagination metadata
  * @throws {AxiosError} On network errors
  */
 export const getComments = async (
   params?: GetCommentsParams
-): Promise<Comment[]> => {
-  const response = await axiosInstance.get<Comment[]>('/comments', { params });
+): Promise<PaginatedResponse<Comment>> => {
+  const response = await axiosInstance.get<PaginatedResponse<Comment>>(
+    '/comments',
+    { params }
+  );
   return response.data;
 };
 
