@@ -1,6 +1,14 @@
 /**
- * API service for post operations.
- * @module
+ * @fileoverview API client for post operations.
+ *
+ * Handles CRUD operations for discussion posts including:
+ * - Creating new posts within topics
+ * - Fetching posts with pagination and filters (topic, category, platform)
+ * - Updating and deleting posts
+ *
+ * @module api/posts
+ * @see {@link Post} for the post data structure
+ * @see {@link GetPostsParams} for available query filters
  */
 
 import axiosInstance from '@/lib/axios';
@@ -9,6 +17,7 @@ import type {
   CreatePostRequest,
   UpdatePostRequest,
   GetPostsParams,
+  PaginatedResponse,
 } from '@/types';
 
 /**
@@ -24,12 +33,16 @@ export const createPost = async (data: CreatePostRequest): Promise<Post> => {
 
 /**
  * Retrieves posts ordered by creation date (newest first).
- * @param params - Optional filters for topic_id, category, and platform
- * @returns Array of posts with preloaded author and topic information
+ * @param params - Optional filters for topic_id, category, platform, and pagination
+ * @returns Paginated response with posts and pagination metadata
  * @throws {AxiosError} On network errors
  */
-export const getPosts = async (params?: GetPostsParams): Promise<Post[]> => {
-  const response = await axiosInstance.get<Post[]>('/posts', { params });
+export const getPosts = async (
+  params?: GetPostsParams
+): Promise<PaginatedResponse<Post>> => {
+  const response = await axiosInstance.get<PaginatedResponse<Post>>('/posts', {
+    params,
+  });
   return response.data;
 };
 

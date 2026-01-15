@@ -23,13 +23,13 @@ export default function PostView() {
 
       try {
         setIsLoading(true);
-        const [postData, commentsData] = await Promise.all([
+        const [postData, commentsResponse] = await Promise.all([
           getPost(Number(postId)),
           getComments({ post_id: Number(postId) }),
         ]);
 
         setPost(postData);
-        setComments(commentsData);
+        setComments(commentsResponse.data);
         setError('');
       } catch (err) {
         console.error('Failed to fetch post data:', err);

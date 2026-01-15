@@ -12,34 +12,35 @@ import (
 	"gorm.io/gorm"
 )
 
+// AuthHandler handles HTTP requests for authentication operations.
 type AuthHandler struct {
 	db *gorm.DB
 }
 
-// Constructor for AuthHandler
+// NewAuthHandler creates a new AuthHandler with the given database connection.
 func NewAuthHandler(db *gorm.DB) *AuthHandler {
 	return &AuthHandler{db: db}
 }
 
-// RegisterRequest represents the registration request payload
+// RegisterRequest represents the registration request payload.
 type RegisterRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
-// LoginRequest represents the login request payload
+// LoginRequest represents the login request payload.
 type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
-// AuthResponse represents the authentication response with user data and token
+// AuthResponse represents the authentication response with user data and token.
 type AuthResponse struct {
 	User  models.User `json:"user"`
 	Token string      `json:"token"`
 }
 
-// Register creates a new user account with hashed password
+// Register creates a new user account and returns a JWT token.
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var req RegisterRequest
 
@@ -97,7 +98,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusCreated, response)
 }
 
-// Login authenticates a user and returns a JWT token
+// Login authenticates a user and returns a JWT token.
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req LoginRequest
 
@@ -142,7 +143,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusOK, response)
 }
 
-// GetCurrentUser returns the currently authenticated user's information
+// GetCurrentUser returns the currently authenticated user's information.
 func (h *AuthHandler) GetCurrentUser(w http.ResponseWriter, r *http.Request) {
 	claims, ok := r.Context().Value(UserContextKey).(*utils.Claims)
 	if !ok {

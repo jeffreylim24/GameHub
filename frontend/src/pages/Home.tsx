@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { getPosts } from '@/api/posts';
-import type { Post } from '@/types';
+import type { Post, PaginationMetadata } from '@/types';
 import PostCard from '@/components/custom/PostCard';
+import PaginationControls from '@/components/custom/PaginationControls';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [pagination, setPagination] = useState<PaginationMetadata | null>(null);
+  const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -13,8 +16,9 @@ export default function Home() {
     const fetchPosts = async () => {
       try {
         setIsLoading(true);
-        const data = await getPosts();
-        setPosts(data);
+        const response = await getPosts({ page });
+        setPosts(response.data);
+        setPagination(response.pagination);
         setError('');
       } catch (err) {
         console.error('Failed to fetch posts:', err);
@@ -25,7 +29,7 @@ export default function Home() {
     };
 
     fetchPosts();
-  }, []);
+  }, [page]);
 
   if (isLoading) {
     return (
@@ -67,6 +71,10 @@ export default function Home() {
           <PostCard key={post.post_id} post={post} />
         ))}
       </div>
+
+      {pagination && (
+        <PaginationControls pagination={pagination} onPageChange={setPage} />
+      )}
     </div>
   );
 }

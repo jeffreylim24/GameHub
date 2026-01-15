@@ -8,21 +8,23 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jeffreylim24/GameHub/models"
+	"github.com/jeffreylim24/GameHub/pagination"
 	"github.com/jeffreylim24/GameHub/utils"
 	"github.com/jeffreylim24/GameHub/validation"
 	"gorm.io/gorm"
 )
 
+// TopicHandler handles HTTP requests for topic operations.
 type TopicHandler struct {
 	db *gorm.DB
 }
 
-// Constructor for TopicHandler
+// NewTopicHandler creates a new TopicHandler with the given database connection.
 func NewTopicHandler(db *gorm.DB) *TopicHandler {
 	return &TopicHandler{db: db}
 }
 
-// Creates a new topic
+// CreateTopic creates a new topic (game).
 func (h *TopicHandler) CreateTopic(w http.ResponseWriter, r *http.Request) {
 	claims, ok := r.Context().Value(UserContextKey).(*utils.Claims)
 	if !ok {
@@ -63,21 +65,35 @@ func (h *TopicHandler) CreateTopic(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusCreated, topic)
 }
 
-// Retrieves all topics
+// GetTopics returns paginated topics sorted by newest first.
 func (h *TopicHandler) GetTopics(w http.ResponseWriter, r *http.Request) {
-	var topics []models.Topic
+	params := pagination.ParseParams(r)
 
-	result := h.db.Preload("Creator").Order("created_at DESC").Find(&topics)
+	var totalCount int64
+	if err := h.db.Model(&models.Topic{}).Count(&totalCount).Error; err != nil {
+		log.Printf("Database error counting topics: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+		return
+	}
+
+	var topics []models.Topic
+	result := h.db.Preload("Creator").
+		Order("created_at DESC").
+		Limit(params.PageSize).
+		Offset(params.Offset).
+		Find(&topics)
+
 	if result.Error != nil {
 		log.Printf("Database error in GetTopics: %v", result.Error)
 		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
 		return
 	}
 
-	RespondWithJSON(w, http.StatusOK, topics)
+	response := pagination.NewResponse(topics, params, totalCount)
+	RespondWithJSON(w, http.StatusOK, response)
 }
 
-// Retrieves a single topic by ID
+// GetTopic returns a single topic by ID.
 func (h *TopicHandler) GetTopic(w http.ResponseWriter, r *http.Request) {
 	topicID := chi.URLParam(r, "id")
 	var topic models.Topic
@@ -97,7 +113,7 @@ func (h *TopicHandler) GetTopic(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusOK, topic)
 }
 
-// Updates an existing topic
+// UpdateTopic updates an existing topic's title or description.
 func (h *TopicHandler) UpdateTopic(w http.ResponseWriter, r *http.Request) {
 	topicID := chi.URLParam(r, "id")
 
@@ -155,7 +171,7 @@ func (h *TopicHandler) UpdateTopic(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusOK, existingTopic)
 }
 
-// Deletes a topic by ID
+// DeleteTopic removes a topic by ID.
 func (h *TopicHandler) DeleteTopic(w http.ResponseWriter, r *http.Request) {
 	topicID := chi.URLParam(r, "id")
 

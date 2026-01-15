@@ -8,21 +8,23 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jeffreylim24/GameHub/models"
+	"github.com/jeffreylim24/GameHub/pagination"
 	"github.com/jeffreylim24/GameHub/utils"
 	"github.com/jeffreylim24/GameHub/validation"
 	"gorm.io/gorm"
 )
 
+// PostHandler handles HTTP requests for post operations.
 type PostHandler struct {
 	db *gorm.DB
 }
 
-// Constructor for PostHandler
+// NewPostHandler creates a new PostHandler with the given database connection.
 func NewPostHandler(db *gorm.DB) *PostHandler {
 	return &PostHandler{db: db}
 }
 
-// Creates a new post
+// CreatePost creates a new post within a topic.
 func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	claims, ok := r.Context().Value(UserContextKey).(*utils.Claims)
 	if !ok {
@@ -87,9 +89,9 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusCreated, post)
 }
 
-// Retrieves all posts
+// GetPosts returns paginated posts with optional filters.
 func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
-	var posts []models.Post
+	params := pagination.ParseParams(r)
 
 	query := h.db.Model(&models.Post{})
 
@@ -111,17 +113,31 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 		query = query.Where("author_id = ?", authorID)
 	}
 
-	result := query.Preload("Author").Preload("Topic").Order("created_at DESC").Find(&posts)
+	var totalCount int64
+	if err := query.Count(&totalCount).Error; err != nil {
+		log.Printf("Database error counting posts: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
+		return
+	}
+
+	var posts []models.Post
+	result := query.Preload("Author").Preload("Topic").
+		Order("created_at DESC").
+		Limit(params.PageSize).
+		Offset(params.Offset).
+		Find(&posts)
+
 	if result.Error != nil {
 		log.Printf("Database error in GetPosts: %v", result.Error)
 		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
 		return
 	}
 
-	RespondWithJSON(w, http.StatusOK, posts)
+	response := pagination.NewResponse(posts, params, totalCount)
+	RespondWithJSON(w, http.StatusOK, response)
 }
 
-// Retrieves a single post by ID
+// GetPost returns a single post by ID.
 func (h *PostHandler) GetPost(w http.ResponseWriter, r *http.Request) {
 	postID := chi.URLParam(r, "id")
 	var post models.Post
@@ -140,7 +156,7 @@ func (h *PostHandler) GetPost(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusOK, post)
 }
 
-// Updates an existing post
+// UpdatePost updates an existing post's fields.
 func (h *PostHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	postID := chi.URLParam(r, "id")
 
@@ -230,7 +246,7 @@ func (h *PostHandler) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	RespondWithJSON(w, http.StatusOK, existingPost)
 }
 
-// Deletes a post by ID
+// DeletePost removes a post by ID.
 func (h *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 	postID := chi.URLParam(r, "id")
 

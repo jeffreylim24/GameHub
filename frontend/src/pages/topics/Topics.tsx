@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { getTopics } from '@/api/topics';
-import type { Topic } from '@/types';
+import type { Topic, PaginationMetadata } from '@/types';
 import TopicCard from '@/components/custom/TopicCard';
 import CreateTopicDialog from '@/components/custom/CreateTopicDialog';
+import PaginationControls from '@/components/custom/PaginationControls';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
-// TODO: Add pagination if topics exceed certain number
 export default function Topics() {
   const [topics, setTopics] = useState<Topic[]>([]);
+  const [pagination, setPagination] = useState<PaginationMetadata | null>(null);
+  const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -17,8 +19,9 @@ export default function Topics() {
     const fetchTopics = async () => {
       try {
         setIsLoading(true);
-        const data = await getTopics();
-        setTopics(data);
+        const response = await getTopics({ page, page_size: 100 });
+        setTopics(response.data);
+        setPagination(response.pagination);
         setError('');
       } catch (err) {
         console.error('Failed to fetch topics:', err);
@@ -29,7 +32,7 @@ export default function Topics() {
     };
 
     fetchTopics();
-  }, []);
+  }, [page]);
 
   const handleCreateTopic = () => {
     setShowCreateDialog(true);
@@ -98,6 +101,10 @@ export default function Topics() {
           />
         ))}
       </div>
+
+      {pagination && (
+        <PaginationControls pagination={pagination} onPageChange={setPage} />
+      )}
 
       <CreateTopicDialog
         open={showCreateDialog}
