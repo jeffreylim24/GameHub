@@ -1,6 +1,14 @@
 /**
- * API service for user operations.
- * @module
+ * @fileoverview API client for user operations.
+ *
+ * Handles CRUD operations for user accounts including:
+ * - Creating new users (direct creation, not via auth flow)
+ * - Fetching users with pagination
+ * - Updating and deleting user accounts
+ *
+ * @module api/users
+ * @see {@link User} for the user data structure
+ * @see api/auth for authentication-related operations
  */
 
 import axiosInstance from '@/lib/axios';
@@ -8,6 +16,8 @@ import type {
   User,
   RegisterRequest,
   UpdateUserRequest,
+  GetUsersParams,
+  PaginatedResponse,
 } from '@/types';
 
 /**
@@ -22,12 +32,17 @@ export const createUser = async (data: RegisterRequest): Promise<User> => {
 };
 
 /**
- * Retrieves all users.
- * @returns Array of all users
+ * Retrieves users with pagination.
+ * @param params - Optional pagination parameters
+ * @returns Paginated response with users and pagination metadata
  * @throws {AxiosError} On network errors
  */
-export const getUsers = async (): Promise<User[]> => {
-  const response = await axiosInstance.get<User[]>('/users');
+export const getUsers = async (
+  params?: GetUsersParams
+): Promise<PaginatedResponse<User>> => {
+  const response = await axiosInstance.get<PaginatedResponse<User>>('/users', {
+    params,
+  });
   return response.data;
 };
 

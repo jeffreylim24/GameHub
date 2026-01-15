@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getTopic } from '@/api/topics';
 import { getPosts } from '@/api/posts';
-import type { Topic, Post } from '@/types';
+import type { Topic, Post, PaginationMetadata } from '@/types';
 import PostCard from '@/components/custom/PostCard';
 import TopicCard from '@/components/custom/TopicCard';
+import PaginationControls from '@/components/custom/PaginationControls';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
@@ -14,6 +15,8 @@ export default function TopicPosts() {
   const navigate = useNavigate();
   const [topic, setTopic] = useState<Topic | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [pagination, setPagination] = useState<PaginationMetadata | null>(null);
+  const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -23,13 +26,14 @@ export default function TopicPosts() {
 
       try {
         setIsLoading(true);
-        const [topicData, postsData] = await Promise.all([
+        const [topicData, postsResponse] = await Promise.all([
           getTopic(Number(topicId)),
-          getPosts({ topic_id: Number(topicId) }),
+          getPosts({ topic_id: Number(topicId), page }),
         ]);
 
         setTopic(topicData);
-        setPosts(postsData);
+        setPosts(postsResponse.data);
+        setPagination(postsResponse.pagination);
         setError('');
       } catch (err) {
         console.error('Failed to fetch topic data:', err);
@@ -40,7 +44,7 @@ export default function TopicPosts() {
     };
 
     fetchData();
-  }, [topicId]);
+  }, [topicId, page]);
 
   // TODO: Replace with proper loading skeleton
   if (isLoading) {
@@ -92,11 +96,17 @@ export default function TopicPosts() {
             </Button>
           </div>
         ) : (
-          <div className="space-y-4">
-            {posts.map((post) => (
-              <PostCard key={post.post_id} post={post} />
-            ))}
-          </div>
+          <>
+            <div className="space-y-4">
+              {posts.map((post) => (
+                <PostCard key={post.post_id} post={post} />
+              ))}
+            </div>
+
+            {pagination && (
+              <PaginationControls pagination={pagination} onPageChange={setPage} />
+            )}
+          </>
         )}
       </div>
     </div>

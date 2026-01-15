@@ -47,14 +47,14 @@ export default function UserProfile() {
       try {
         setIsLoading(true);
         const userData = await getUser(Number(userId));
-        const [postsData, commentsData] = await Promise.all([
+        const [postsResponse, commentsResponse] = await Promise.all([
           getPosts({ author_id: userData.user_id }),
           getComments({ author_id: userData.user_id }),
         ]);
 
         setUser(userData);
-        setPosts(postsData);
-        setComments(commentsData);
+        setPosts(postsResponse.data);
+        setComments(commentsResponse.data);
         setError('');
       } catch (err) {
         console.error('Failed to load user profile:', err);

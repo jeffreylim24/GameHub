@@ -1,6 +1,15 @@
 /**
- * API service for topic operations.
- * @module
+ * @fileoverview API client for topic (game) operations.
+ *
+ * Handles CRUD operations for game topics including:
+ * - Creating new game topics
+ * - Fetching topics with pagination
+ * - Updating and deleting topics
+ *
+ * Topics represent games that can be discussed in the forum.
+ *
+ * @module api/topics
+ * @see {@link Topic} for the topic data structure
  */
 
 import axiosInstance from '@/lib/axios';
@@ -8,6 +17,8 @@ import type {
   Topic,
   CreateTopicRequest,
   UpdateTopicRequest,
+  GetTopicsParams,
+  PaginatedResponse,
 } from '@/types';
 
 /**
@@ -22,12 +33,17 @@ export const createTopic = async (data: CreateTopicRequest): Promise<Topic> => {
 };
 
 /**
- * Retrieves all topics ordered by creation date (newest first).
- * @returns Array of topics with preloaded creator information
+ * Retrieves topics ordered by creation date (newest first).
+ * @param params - Optional pagination parameters
+ * @returns Paginated response with topics and pagination metadata
  * @throws {AxiosError} On network errors
  */
-export const getTopics = async (): Promise<Topic[]> => {
-  const response = await axiosInstance.get<Topic[]>('/topics');
+export const getTopics = async (
+  params?: GetTopicsParams
+): Promise<PaginatedResponse<Topic>> => {
+  const response = await axiosInstance.get<PaginatedResponse<Topic>>('/topics', {
+    params,
+  });
   return response.data;
 };
 
