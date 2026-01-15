@@ -13,9 +13,9 @@ By: Jeffrey Lim @ Htet Min Shein, A0300154Y
 ### Database Setup
 ```bash
 # Create database and user (from psql)
-CREATE DATABASE gamehub;
-CREATE USER gamehub_user WITH PASSWORD 'your_password_here';
-GRANT ALL PRIVILEGES ON DATABASE gamehub TO gamehub_user;
+CREATE DATABASE gamehub
+CREATE USER gamehub_user WITH PASSWORD 'your_password_here'
+GRANT ALL PRIVILEGES ON DATABASE gamehub TO gamehub_user
 ```
 
 ### Backend
