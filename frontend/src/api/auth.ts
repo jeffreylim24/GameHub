@@ -16,7 +16,7 @@ import type { RegisterRequest, LoginRequest, AuthResponse, User } from '@/types'
 
 /**
  * Registers a new user account.
- * @param data - Registration credentials (username)
+ * @param data - Registration credentials (username and password)
  * @returns Authentication response with user data and session token
  * @throws {AxiosError} On validation errors (e.g., username taken) or network failures
  */
@@ -27,7 +27,7 @@ export const register = async (data: RegisterRequest): Promise<AuthResponse> => 
 
 /**
  * Authenticates an existing user.
- * @param data - Login credentials (username)
+ * @param data - Login credentials (username and password)
  * @returns Authentication response with user data and session token
  * @throws {AxiosError} On invalid credentials or network failures
  */
