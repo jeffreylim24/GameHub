@@ -64,6 +64,7 @@ export default function TopicPosts() {
         setPagination(postsResponse.pagination);
       } catch (err) {
         console.error('Failed to fetch posts:', err);
+        setError('Failed to load posts. Please try again later.');
       } finally {
         setIsPostsLoading(false);
       }
