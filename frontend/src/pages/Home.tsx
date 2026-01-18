@@ -42,22 +42,56 @@ export default function Home() {
     fetchPosts();
   }, [page, debouncedSearch]);
 
-  if (isLoading) {
-    return (
-      // TODO: Replace with a proper skeleton loader
-      <div className="text-center py-12">
-        <p className="text-gray-500">Loading posts...</p>
-      </div>
-    );
-  }
+  const renderPostsContent = () => {
+    if (isLoading) {
+      return (
+        <div className="text-center py-12">
+          <p className="text-gray-500">Loading posts...</p>
+        </div>
+      );
+    }
 
-  if (error) {
+    if (error) {
+      return (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      );
+    }
+
+    if (posts.length === 0 && debouncedSearch) {
+      return (
+        <div className="text-center py-12">
+          <p className="text-gray-500">
+            No posts found matching "{debouncedSearch}"
+          </p>
+        </div>
+      );
+    }
+
+    if (posts.length === 0) {
+      return (
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold mb-2">No posts yet</h2>
+          <p className="text-gray-500">Be the first to create a post!</p>
+        </div>
+      );
+    }
+
     return (
-      <Alert variant="destructive">
-        <AlertDescription>{error}</AlertDescription>
-      </Alert>
+      <>
+        <div className="space-y-4">
+          {posts.map((post) => (
+            <PostCard key={post.post_id} post={post} />
+          ))}
+        </div>
+
+        {pagination && (
+          <PaginationControls pagination={pagination} onPageChange={setPage} />
+        )}
+      </>
     );
-  }
+  };
 
   return (
     <div>
@@ -76,30 +110,7 @@ export default function Home() {
         />
       </div>
 
-      {posts.length === 0 && debouncedSearch ? (
-        <div className="text-center py-12">
-          <p className="text-gray-500">
-            No posts found matching "{debouncedSearch}"
-          </p>
-        </div>
-      ) : posts.length === 0 ? (
-        <div className="text-center py-12">
-          <h2 className="text-2xl font-bold mb-2">No posts yet</h2>
-          <p className="text-gray-500">Be the first to create a post!</p>
-        </div>
-      ) : (
-        <>
-          <div className="space-y-4">
-            {posts.map((post) => (
-              <PostCard key={post.post_id} post={post} />
-            ))}
-          </div>
-
-          {pagination && (
-            <PaginationControls pagination={pagination} onPageChange={setPage} />
-          )}
-        </>
-      )}
+      {renderPostsContent()}
     </div>
   );
 }

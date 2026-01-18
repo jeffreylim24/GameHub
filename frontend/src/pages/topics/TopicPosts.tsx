@@ -19,7 +19,8 @@ export default function TopicPosts() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [pagination, setPagination] = useState<PaginationMetadata | null>(null);
   const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isTopicLoading, setIsTopicLoading] = useState(true);
+  const [isPostsLoading, setIsPostsLoading] = useState(false);
   const [error, setError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearch = useDebounce(searchQuery);
@@ -29,37 +30,49 @@ export default function TopicPosts() {
   }, [debouncedSearch]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchTopic = async () => {
       if (!topicId) return;
 
       try {
-        setIsLoading(true);
-        const [topicData, postsResponse] = await Promise.all([
-          getTopic(Number(topicId)),
-          getPosts({
-            topic_id: Number(topicId),
-            page,
-            search: debouncedSearch || undefined,
-          }),
-        ]);
-
+        setIsTopicLoading(true);
+        const topicData = await getTopic(Number(topicId));
         setTopic(topicData);
-        setPosts(postsResponse.data);
-        setPagination(postsResponse.pagination);
         setError('');
       } catch (err) {
-        console.error('Failed to fetch topic data:', err);
+        console.error('Failed to fetch topic:', err);
         setError('Topic not found');
       } finally {
-        setIsLoading(false);
+        setIsTopicLoading(false);
       }
     };
 
-    fetchData();
+    fetchTopic();
+  }, [topicId]);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      if (!topicId) return;
+
+      try {
+        setIsPostsLoading(true);
+        const postsResponse = await getPosts({
+          topic_id: Number(topicId),
+          page,
+          search: debouncedSearch || undefined,
+        });
+        setPosts(postsResponse.data);
+        setPagination(postsResponse.pagination);
+      } catch (err) {
+        console.error('Failed to fetch posts:', err);
+      } finally {
+        setIsPostsLoading(false);
+      }
+    };
+
+    fetchPosts();
   }, [topicId, page, debouncedSearch]);
 
-  // TODO: Replace with proper loading skeleton
-  if (isLoading) {
+  if (isTopicLoading) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">Loading topic...</p>
@@ -108,7 +121,11 @@ export default function TopicPosts() {
           />
         </div>
 
-        {posts.length === 0 && debouncedSearch ? (
+        {isPostsLoading ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500">Loading posts...</p>
+          </div>
+        ) : posts.length === 0 && debouncedSearch ? (
           <div className="text-center py-12">
             <p className="text-gray-500">
               No posts found matching "{debouncedSearch}"

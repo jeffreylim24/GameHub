@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
  * Useful for search inputs to avoid making API calls on every keystroke.
  *
  * @param value - The value to debounce
- * @param delay - Delay in milliseconds (default: 300ms)
+ * @param delay - Delay in milliseconds (default: 500ms)
  * @returns The debounced value
  */
 export function useDebounce<T>(value: T, delay: number = 500): T {
