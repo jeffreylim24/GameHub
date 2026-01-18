@@ -213,6 +213,7 @@ export interface GetPostsParams extends PaginationParams {
   author_id?: number;
   category?: PostCategory;
   platform?: PostPlatform;
+  search?: string;
 }
 
 /**
@@ -228,7 +229,9 @@ export interface GetCommentsParams extends PaginationParams {
  * Query parameters for fetching topics.
  * Extends PaginationParams to support paginated requests.
  */
-export interface GetTopicsParams extends PaginationParams {}
+export interface GetTopicsParams extends PaginationParams {
+  search?: string;
+}
 
 /**
  * Query parameters for fetching users.

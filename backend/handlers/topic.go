@@ -66,18 +66,26 @@ func (h *TopicHandler) CreateTopic(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetTopics returns paginated topics sorted by newest first.
+// Supports optional search filter (title contains).
 func (h *TopicHandler) GetTopics(w http.ResponseWriter, r *http.Request) {
 	params := pagination.ParseParams(r)
 
+	query := h.db.Model(&models.Topic{})
+
+	search := r.URL.Query().Get("search")
+	if search != "" {
+		query = query.Where("title ILIKE ?", "%"+search+"%")
+	}
+
 	var totalCount int64
-	if err := h.db.Model(&models.Topic{}).Count(&totalCount).Error; err != nil {
+	if err := query.Count(&totalCount).Error; err != nil {
 		log.Printf("Database error counting topics: %v", err)
 		RespondWithError(w, http.StatusInternalServerError, ErrInternalServer)
 		return
 	}
 
 	var topics []models.Topic
-	result := h.db.Preload("Creator").
+	result := query.Preload("Creator").
 		Order("created_at DESC").
 		Limit(params.PageSize).
 		Offset(params.Offset).

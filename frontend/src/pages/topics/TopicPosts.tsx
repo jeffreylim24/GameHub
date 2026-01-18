@@ -6,6 +6,8 @@ import type { Topic, Post, PaginationMetadata } from '@/types';
 import PostCard from '@/components/custom/PostCard';
 import TopicCard from '@/components/custom/TopicCard';
 import PaginationControls from '@/components/custom/PaginationControls';
+import SearchBar from '@/components/custom/SearchBar';
+import { useDebounce } from '@/hooks/useDebounce';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
@@ -19,6 +21,12 @@ export default function TopicPosts() {
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearch = useDebounce(searchQuery);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,7 +36,11 @@ export default function TopicPosts() {
         setIsLoading(true);
         const [topicData, postsResponse] = await Promise.all([
           getTopic(Number(topicId)),
-          getPosts({ topic_id: Number(topicId), page }),
+          getPosts({
+            topic_id: Number(topicId),
+            page,
+            search: debouncedSearch || undefined,
+          }),
         ]);
 
         setTopic(topicData);
@@ -44,7 +56,7 @@ export default function TopicPosts() {
     };
 
     fetchData();
-  }, [topicId, page]);
+  }, [topicId, page, debouncedSearch]);
 
   // TODO: Replace with proper loading skeleton
   if (isLoading) {
@@ -88,7 +100,21 @@ export default function TopicPosts() {
           </Button>
         </div>
 
-        {posts.length === 0 ? (
+        <div className="mb-4">
+          <SearchBar
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder="Search posts in this topic..."
+          />
+        </div>
+
+        {posts.length === 0 && debouncedSearch ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500">
+              No posts found matching "{debouncedSearch}"
+            </p>
+          </div>
+        ) : posts.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-500 mb-4">No posts in this topic yet.</p>
             <Button onClick={() => navigate(`/posts/new?topicId=${topicId}`)}>

@@ -90,6 +90,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetPosts returns paginated posts with optional filters.
+// Supports filters: topic_id, category, platform, author_id, search (title contains).
 func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	params := pagination.ParseParams(r)
 
@@ -99,6 +100,7 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	category := r.URL.Query().Get("category")
 	platform := r.URL.Query().Get("platform")
 	authorID := r.URL.Query().Get("author_id")
+	search := r.URL.Query().Get("search")
 
 	if topicID != "" {
 		query = query.Where("topic_id = ?", topicID)
@@ -111,6 +113,9 @@ func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	}
 	if authorID != "" {
 		query = query.Where("author_id = ?", authorID)
+	}
+	if search != "" {
+		query = query.Where("title ILIKE ?", "%"+search+"%")
 	}
 
 	var totalCount int64
