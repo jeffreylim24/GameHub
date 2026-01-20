@@ -67,7 +67,7 @@ export default function PostView() {
   if (isLoading) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Loading post...</p>
+        <p className="text-[var(--sport-muted)]">Loading post...</p>
       </div>
     );
   }
@@ -86,17 +86,23 @@ export default function PostView() {
     <div className="space-y-6">
       <PostCard post={post} variant="detail" onDelete={handlePostDeleted} onUpdate={handlePostUpdated} />
 
-      <Separator />
+      <Separator className="bg-[var(--sport-border)]" />
 
       <div className="space-y-4">
-        <h2 className="text-2xl font-bold">
-          Comments ({comments.length})
-        </h2>
+        <div>
+          <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.35em] text-[var(--sport-muted)]">
+            <span className="h-2 w-2 rounded-full bg-[var(--sport-blue)]" />
+            Comment Lane
+          </div>
+          <h2 className="text-2xl font-bold mt-2">
+            Comments ({comments.length})
+          </h2>
+        </div>
 
         <CommentForm postId={Number(postId)} onCommentAdded={handleCommentAdded} />
         
         {comments.length === 0 ? (
-          <p className="text-center text-gray-500 py-8">
+          <p className="text-center text-[var(--sport-muted)] py-8">
             No comments yet. Be the first to comment!
           </p>
         ) : (

@@ -28,7 +28,7 @@ export function SpoilerOverlay({ hasSpoilers, children }: SpoilerOverlayProps) {
 
       <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-lg">
         <Button
-          variant="secondary"
+          variant="sport-outline"
           size="sm"
           onClick={handleReveal}
           className="gap-2"

@@ -21,29 +21,31 @@ export default function PostCardDetailView({
   onDeleteClick,
 }: PostCardDetailViewProps) {
   return (
-      <Card>
+      <Card variant="sport" className="overflow-hidden border-l-4 border-l-[var(--sport-blue)]">
         <CardHeader>
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
-              <CardTitle className="text-2xl mb-2">{post.title}</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-2xl mb-2 font-semibold tracking-[0.05em] text-[var(--sport-ink)]">
+                {post.title}
+              </CardTitle>
+              <CardDescription className="text-[var(--sport-muted)]">
                 Posted by{' '}
                 {post.author?.username ? (
                   <Link
                     to={`/user/${post.author.user_id}`}
-                    className="font-semibold hover:underline"
+                    className="font-semibold text-[var(--sport-blue)] hover:text-[var(--sport-ink)]"
                   >
                     {post.author.username}
                   </Link>
                 ) : (
-                  <strong>Anonymous</strong>
+                  <strong className="text-[var(--sport-ink)]">Anonymous</strong>
                 )}
                 {' on '}
                 {formatLongDate(post.created_at)}
                 {' in '}
                 <Link
                   to={`/topics/${post.topic_id}`}
-                  className="font-semibold hover:underline"
+                  className="font-semibold text-[var(--sport-blue)] hover:text-[var(--sport-ink)]"
                 >
                   {post.topic?.title}
                 </Link>
@@ -52,10 +54,10 @@ export default function PostCardDetailView({
             <div className="flex gap-2 items-start">
               <div className="flex flex-col gap-2 items-end">
                 {post.category && (
-                  <Badge variant="secondary">{post.category}</Badge>
+                  <Badge variant="sport">{post.category}</Badge>
                 )}
                 {post.platform && (
-                  <Badge variant="outline">{post.platform}</Badge>
+                  <Badge variant="sport-outline">{post.platform}</Badge>
                 )}
                 {post.has_spoilers && (
                   <Badge variant="destructive">Spoilers</Badge>
@@ -64,7 +66,7 @@ export default function PostCardDetailView({
               {isAuthor && (
                 <>
                   <Button
-                    variant="ghost"
+                    variant="sport-ghost"
                     size="icon"
                     onClick={onEditClick}
                     className="h-8 w-8"
@@ -72,7 +74,7 @@ export default function PostCardDetailView({
                     <Edit2 className="h-4 w-4" />
                   </Button>
                   <Button
-                    variant="ghost"
+                    variant="sport-ghost"
                     size="icon"
                     onClick={onDeleteClick}
                     className="h-8 w-8"
@@ -85,7 +87,7 @@ export default function PostCardDetailView({
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+          <p className="text-[var(--sport-ink-2)] whitespace-pre-wrap leading-relaxed">
             {post.content}
           </p>
         </CardContent>

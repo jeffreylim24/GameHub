@@ -87,7 +87,7 @@ export default function UserProfile() {
   if (isLoading) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Loading profile...</p>
+        <p className="text-[var(--sport-muted)]">Loading profile...</p>
       </div>
     );
   }
@@ -107,7 +107,7 @@ export default function UserProfile() {
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-bold">{user.username}</h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-[var(--sport-muted)] mt-1">
             Joined {formatJoinDate(user.created_at)}
           </p>
         </div>
@@ -150,7 +150,7 @@ export default function UserProfile() {
 
         <TabsContent value="posts">
           {posts.length === 0 ? (
-            <p className="text-center text-gray-500 py-8">
+            <p className="text-center text-[var(--sport-muted)] py-8">
               No posts yet.
             </p>
           ) : (
@@ -164,7 +164,7 @@ export default function UserProfile() {
 
         <TabsContent value="comments">
           {comments.length === 0 ? (
-            <p className="text-center text-gray-500 py-8">
+            <p className="text-center text-[var(--sport-muted)] py-8">
               No comments yet.
             </p>
           ) : (

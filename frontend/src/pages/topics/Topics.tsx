@@ -64,7 +64,7 @@ export default function Topics() {
     if (isLoading) {
       return (
         <div className="text-center py-12">
-          <p className="text-gray-500">Loading topics...</p>
+          <p className="text-[var(--sport-muted)]">Loading topics...</p>
         </div>
       );
     }
@@ -80,7 +80,7 @@ export default function Topics() {
     if (topics.length === 0 && debouncedSearch) {
       return (
         <div className="text-center py-12">
-          <p className="text-gray-500">
+          <p className="text-[var(--sport-muted)]">
             No topics found matching "{debouncedSearch}"
           </p>
         </div>
@@ -91,7 +91,7 @@ export default function Topics() {
       return (
         <div className="text-center py-12">
           <h2 className="text-2xl font-bold mb-2">No topics yet</h2>
-          <p className="text-gray-500 mb-4">Be the first to create a topic!</p>
+          <p className="text-[var(--sport-muted)] mb-4">Be the first to create a topic!</p>
         </div>
       );
     }
@@ -99,13 +99,18 @@ export default function Topics() {
     return (
       <>
         <div className="space-y-4">
-          {topics.map((topic) => (
-            <TopicCard
+          {topics.map((topic, index) => (
+            <div
               key={topic.topic_id}
-              topic={topic}
-              onDelete={handleDeleteTopic}
-              onUpdate={handleUpdateTopic}
-            />
+              className="motion-safe:animate-[sport-rise_0.45s_ease-out_both]"
+              style={{ animationDelay: `${index * 70}ms` }}
+            >
+              <TopicCard
+                topic={topic}
+                onDelete={handleDeleteTopic}
+                onUpdate={handleUpdateTopic}
+              />
+            </div>
           ))}
         </div>
 
@@ -120,12 +125,18 @@ export default function Topics() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Browse Topics</h1>
-          <p className="text-gray-600 mt-1">
+          <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.35em] text-[var(--sport-muted)]">
+            <span className="h-2 w-2 rounded-full bg-[var(--sport-orange)]" />
+            Topic Hub
+          </div>
+          <h1 className="text-3xl font-bold mt-2">Browse Topics</h1>
+          <p className="text-[var(--sport-muted)] mt-1">
             Explore games and discussions
           </p>
         </div>
-        <Button onClick={handleCreateTopic}>Create Topic</Button>
+        <Button variant="sport" onClick={handleCreateTopic}>
+          Create Topic
+        </Button>
       </div>
 
       <div className="mb-6">

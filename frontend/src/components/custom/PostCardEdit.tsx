@@ -106,7 +106,7 @@ export default function PostCardEdit({ post, onCancel, onUpdate }: PostCardEditP
   };
 
   return (
-    <Card>
+    <Card variant="sport" className="border-l-4 border-l-[var(--sport-red)]">
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardHeader>
           <div className="flex items-start justify-between gap-4">
@@ -119,11 +119,12 @@ export default function PostCardEdit({ post, onCancel, onUpdate }: PostCardEditP
                   id="title"
                   {...register('title')}
                   disabled={isSubmitting}
+                  variant="sport"
                 />
                 {errors.title && (
                   <p className="text-sm text-red-500">{errors.title.message}</p>
                 )}
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-[var(--sport-muted)]">
                   {title?.length || 0}/300 characters
                 </p>
               </div>
@@ -131,7 +132,7 @@ export default function PostCardEdit({ post, onCancel, onUpdate }: PostCardEditP
             <div className="flex gap-1">
               <Button
                 type="submit"
-                variant="ghost"
+                variant="sport-ghost"
                 size="icon"
                 disabled={isSubmitting}
                 className="h-8 w-8"
@@ -140,7 +141,7 @@ export default function PostCardEdit({ post, onCancel, onUpdate }: PostCardEditP
               </Button>
               <Button
                 type="button"
-                variant="ghost"
+                variant="sport-ghost"
                 size="icon"
                 onClick={handleCancelClick}
                 disabled={isSubmitting}
@@ -162,11 +163,12 @@ export default function PostCardEdit({ post, onCancel, onUpdate }: PostCardEditP
               maxLength={5000}
               {...register('content')}
               disabled={isSubmitting}
+              variant="sport"
             />
             {errors.content && (
               <p className="text-sm text-red-500">{errors.content.message}</p>
             )}
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[var(--sport-muted)]">
               {content?.length || 0}/5000 characters
             </p>
           </div>
@@ -183,7 +185,7 @@ export default function PostCardEdit({ post, onCancel, onUpdate }: PostCardEditP
                     value={field.value || 'none'}
                     disabled={isSubmitting}
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full border-[var(--sport-border)] bg-[var(--sport-surface-2)]">
                       <SelectValue placeholder="Select a category..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -210,7 +212,7 @@ export default function PostCardEdit({ post, onCancel, onUpdate }: PostCardEditP
                     value={field.value || 'none'}
                     disabled={isSubmitting}
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full border-[var(--sport-border)] bg-[var(--sport-surface-2)]">
                       <SelectValue placeholder="Select a platform..." />
                     </SelectTrigger>
                     <SelectContent>

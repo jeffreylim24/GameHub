@@ -23,7 +23,7 @@ export default function PaginationControls({
   }
 
   return (
-    <Pagination>
+    <Pagination className="mt-8">
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
@@ -32,11 +32,12 @@ export default function PaginationControls({
             className={
               !has_previous ? 'pointer-events-none opacity-50' : 'cursor-pointer'
             }
+            variant="sport-outline"
           />
         </PaginationItem>
 
         <PaginationItem>
-          <span className="px-4 text-sm text-muted-foreground">
+          <span className="px-4 text-xs uppercase tracking-[0.2em] text-[var(--sport-muted)]">
             Page {current_page} of {total_pages}
           </span>
         </PaginationItem>
@@ -46,6 +47,7 @@ export default function PaginationControls({
             onClick={() => onPageChange(current_page + 1)}
             aria-disabled={!has_next}
             className={!has_next ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+            variant="sport-outline"
           />
         </PaginationItem>
       </PaginationContent>

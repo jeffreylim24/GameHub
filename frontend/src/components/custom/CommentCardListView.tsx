@@ -33,22 +33,23 @@ export default function CommentCardListView({
   return (
     <SpoilerOverlay hasSpoilers={comment.has_spoilers}>
       <Card
-        className="cursor-pointer hover:shadow-md transition-shadow"
+        variant="sport"
+        className="cursor-pointer border-l-4 border-l-[var(--sport-blue)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_34px_-24px_rgba(11,15,20,0.8)]"
         onClick={handleClick}
       >
         <CardHeader>
           <div className="flex items-start justify-between gap-2">
-            <CardDescription className="text-sm">
+            <CardDescription className="text-sm text-[var(--sport-muted)]">
               {comment.author?.username ? (
                 <Link
                   to={`/user/${comment.author.user_id}`}
                   onClick={handleLinkClick}
-                  className="font-semibold hover:underline"
+                  className="font-semibold text-[var(--sport-blue)] hover:text-[var(--sport-ink)]"
                 >
                   {comment.author.username}
                 </Link>
               ) : (
-                <strong>Anonymous</strong>
+                <strong className="text-[var(--sport-ink)]">Anonymous</strong>
               )}
               {' commented on '}
               <strong>{truncateTitle(comment.post?.title || 'Unknown Post', 15)}</strong>
@@ -56,7 +57,7 @@ export default function CommentCardListView({
               <Link
                 to={`/topics/${comment.post?.topic_id}`}
                 onClick={handleLinkClick}
-                className="font-semibold hover:underline"
+                className="font-semibold text-[var(--sport-blue)] hover:text-[var(--sport-ink)]"
               >
                 {comment.post?.topic?.title || 'Unknown Topic'}
               </Link>
@@ -69,7 +70,7 @@ export default function CommentCardListView({
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-600 line-clamp-1">
+          <p className="text-sm text-[var(--sport-ink-2)] opacity-80 line-clamp-1">
             {comment.content}
           </p>
         </CardContent>

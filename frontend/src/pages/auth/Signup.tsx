@@ -79,7 +79,7 @@ export default function Signup() {
 
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
-      <Card className="w-full max-w-md">
+      <Card variant="sport" className="w-full max-w-md border-l-4 border-l-[var(--sport-red)]">
         <CardHeader>
           <CardTitle>Sign Up</CardTitle>
           <CardDescription>
@@ -96,6 +96,7 @@ export default function Signup() {
                 placeholder="Choose a username"
                 {...register('username')}
                 disabled={isLoading}
+                variant="sport"
               />
               {errors.username && (
                 <p className="text-sm text-red-500">
@@ -112,6 +113,7 @@ export default function Signup() {
                 placeholder="Choose a password (8-72 characters)"
                 {...register('password')}
                 disabled={isLoading}
+                variant="sport"
               />
               {errors.password && (
                 <p className="text-sm text-red-500">
@@ -128,6 +130,7 @@ export default function Signup() {
                 placeholder="Confirm your password"
                 {...register('confirmPassword')}
                 disabled={isLoading}
+                variant="sport"
               />
               {errors.confirmPassword && (
                 <p className="text-sm text-red-500">
@@ -142,13 +145,13 @@ export default function Signup() {
               </Alert>
             )}
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full" disabled={isLoading} variant="sport">
               {isLoading ? 'Creating account...' : 'Sign Up'}
             </Button>
 
-            <p className="text-sm text-center text-gray-600">
+            <p className="text-sm text-center text-[var(--sport-muted)]">
               Already have an account?{' '}
-              <Link to="/login" className="text-blue-600 hover:underline">
+              <Link to="/login" className="text-[var(--sport-blue)] hover:text-[var(--sport-ink)]">
                 Login
               </Link>
             </p>

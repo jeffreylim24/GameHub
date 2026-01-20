@@ -76,7 +76,7 @@ export default function TopicPosts() {
   if (isTopicLoading) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Loading topic...</p>
+        <p className="text-[var(--sport-muted)]">Loading topic...</p>
       </div>
     );
   }
@@ -108,8 +108,17 @@ export default function TopicPosts() {
 
       <div>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-2xl font-bold">Posts</h2>
-          <Button onClick={() => navigate(`/posts/new?topicId=${topicId}`)}>
+          <div>
+            <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.35em] text-[var(--sport-muted)]">
+              <span className="h-2 w-2 rounded-full bg-[var(--sport-orange)]" />
+              Topic Feed
+            </div>
+            <h2 className="text-2xl font-bold mt-2">Posts</h2>
+          </div>
+          <Button
+            variant="sport"
+            onClick={() => navigate(`/posts/new?topicId=${topicId}`)}
+          >
             Create Post
           </Button>
         </div>
@@ -124,26 +133,35 @@ export default function TopicPosts() {
 
         {isPostsLoading ? (
           <div className="text-center py-12">
-            <p className="text-gray-500">Loading posts...</p>
+            <p className="text-[var(--sport-muted)]">Loading posts...</p>
           </div>
         ) : posts.length === 0 && debouncedSearch ? (
           <div className="text-center py-12">
-            <p className="text-gray-500">
+            <p className="text-[var(--sport-muted)]">
               No posts found matching "{debouncedSearch}"
             </p>
           </div>
         ) : posts.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500 mb-4">No posts in this topic yet.</p>
-            <Button onClick={() => navigate(`/posts/new?topicId=${topicId}`)}>
+            <p className="text-[var(--sport-muted)] mb-4">No posts in this topic yet.</p>
+            <Button
+              variant="sport"
+              onClick={() => navigate(`/posts/new?topicId=${topicId}`)}
+            >
               Create the first post
             </Button>
           </div>
         ) : (
           <>
             <div className="space-y-4">
-              {posts.map((post) => (
-                <PostCard key={post.post_id} post={post} />
+              {posts.map((post, index) => (
+                <div
+                  key={post.post_id}
+                  className="motion-safe:animate-[sport-rise_0.45s_ease-out_both]"
+                  style={{ animationDelay: `${index * 70}ms` }}
+                >
+                  <PostCard post={post} />
+                </div>
               ))}
             </div>
 
