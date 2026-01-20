@@ -46,7 +46,7 @@ export default function Home() {
     if (isLoading) {
       return (
         <div className="text-center py-12">
-          <p className="text-gray-500">Loading posts...</p>
+          <p className="text-[var(--sport-muted)]">Loading posts...</p>
         </div>
       );
     }
@@ -62,7 +62,7 @@ export default function Home() {
     if (posts.length === 0 && debouncedSearch) {
       return (
         <div className="text-center py-12">
-          <p className="text-gray-500">
+          <p className="text-[var(--sport-muted)]">
             No posts found matching "{debouncedSearch}"
           </p>
         </div>
@@ -73,7 +73,7 @@ export default function Home() {
       return (
         <div className="text-center py-12">
           <h2 className="text-2xl font-bold mb-2">No posts yet</h2>
-          <p className="text-gray-500">Be the first to create a post!</p>
+          <p className="text-[var(--sport-muted)]">Be the first to create a post!</p>
         </div>
       );
     }
@@ -81,8 +81,14 @@ export default function Home() {
     return (
       <>
         <div className="space-y-4">
-          {posts.map((post) => (
-            <PostCard key={post.post_id} post={post} />
+          {posts.map((post, index) => (
+            <div
+              key={post.post_id}
+              className="motion-safe:animate-[sport-rise_0.45s_ease-out_both]"
+              style={{ animationDelay: `${index * 70}ms` }}
+            >
+              <PostCard post={post} />
+            </div>
           ))}
         </div>
 
@@ -96,8 +102,14 @@ export default function Home() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">All Posts</h1>
-        <p className="text-gray-600 mt-1">
+        <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.35em] text-[var(--sport-muted)]">
+          <span className="h-2 w-2 rounded-full bg-[var(--sport-red)]" />
+          Community Feed
+        </div>
+        <h1 className="text-4xl font-semibold mt-2 text-[var(--sport-ink)]">
+          All Posts
+        </h1>
+        <p className="text-[var(--sport-muted)] mt-1">
           Latest discussions from the community
         </p>
       </div>

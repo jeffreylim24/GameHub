@@ -15,16 +15,17 @@ export default function AuthSection() {
   if (isAuthenticated) {
     return (
       <div className="flex items-center gap-2">
-        <Button asChild variant="outline" size="icon-sm">
+        <Button asChild variant="sport-outline" size="icon-sm" className="rounded-full">
           <Link to={`/user/${currentUserId}`} aria-label="View profile">
             <User />
           </Link>
         </Button>
         <Button
           onClick={handleLogout}
-          variant="outline"
+          variant="sport-outline"
           size="icon-sm"
           aria-label="Log out"
+          className="rounded-full"
         >
           <LogOut />
         </Button>
@@ -35,12 +36,14 @@ export default function AuthSection() {
   return (
     <div className="flex items-center gap-2">
       <Link to="/login">
-        <Button variant="outline" size="sm">
+        <Button variant="sport-outline" size="sm">
           Login
         </Button>
       </Link>
       <Link to="/signup">
-        <Button size="sm">Sign Up</Button>
+        <Button variant="sport" size="sm">
+          Sign Up
+        </Button>
       </Link>
     </div>
   );

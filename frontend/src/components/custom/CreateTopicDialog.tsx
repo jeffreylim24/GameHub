@@ -105,7 +105,7 @@ export default function CreateTopicDialog({
   if (!isAuthenticated) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent>
+        <DialogContent className="border-[var(--sport-border)] bg-[var(--sport-surface-2)]">
           <DialogHeader>
             <DialogTitle>Login Required</DialogTitle>
             <DialogDescription>
@@ -113,10 +113,12 @@ export default function CreateTopicDialog({
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
+            <Button variant="sport-outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button onClick={() => navigate('/login')}>Go to Login</Button>
+            <Button variant="sport" onClick={() => navigate('/login')}>
+              Go to Login
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -125,7 +127,7 @@ export default function CreateTopicDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent>
+      <DialogContent className="border-[var(--sport-border)] bg-[var(--sport-surface-2)]">
         <DialogHeader>
           <DialogTitle>Create New Topic</DialogTitle>
           <DialogDescription>
@@ -150,6 +152,7 @@ export default function CreateTopicDialog({
                 placeholder="e.g., Elden Ring, The Legend of Zelda"
                 {...register('title')}
                 disabled={isSubmitting}
+                variant="sport"
               />
               {errors.title && (
                 <p className="text-sm text-red-500">{errors.title.message}</p>
@@ -165,13 +168,14 @@ export default function CreateTopicDialog({
                 maxLength={500}
                 {...register('description')}
                 disabled={isSubmitting}
+                variant="sport"
               />
               {errors.description && (
                 <p className="text-sm text-red-500">
                   {errors.description.message}
                 </p>
               )}
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-[var(--sport-muted)]">
                 {description?.length || 0}/500 characters
               </p>
             </div>
@@ -180,13 +184,13 @@ export default function CreateTopicDialog({
           <DialogFooter>
             <Button
               type="button"
-              variant="outline"
+              variant="sport-outline"
               onClick={handleClose}
               disabled={isSubmitting}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting} variant="sport">
               {isSubmitting ? 'Creating...' : 'Create Topic'}
             </Button>
           </DialogFooter>

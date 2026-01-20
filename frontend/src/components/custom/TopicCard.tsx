@@ -83,21 +83,29 @@ export default function TopicCard({ topic, onDelete, onUpdate, clickable = true 
   return (
     <>
       <Card
-        className={clickable ? 'cursor-pointer hover:shadow-md transition-shadow' : ''}
+        variant="sport"
+        className={[
+          'relative overflow-hidden border-l-4 border-l-[var(--sport-orange)] transition-all',
+          clickable ? 'cursor-pointer hover:-translate-y-0.5 hover:shadow-[0_22px_34px_-24px_rgba(11,15,20,0.8)]' : '',
+        ].join(' ')}
         onClick={handleClick}
       >
         <CardHeader>
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
-              <CardTitle className="text-2xl">{topic.title}</CardTitle>
+              <CardTitle className="text-2xl font-semibold tracking-[0.05em] text-[var(--sport-ink)]">
+                {topic.title}
+              </CardTitle>
               {topic.description && (
-                <CardDescription>{topic.description}</CardDescription>
+                <CardDescription className="mt-1 text-[var(--sport-muted)]">
+                  {topic.description}
+                </CardDescription>
               )}
             </div>
             {isAdmin && (
               <div className="flex gap-1">
                 <Button
-                  variant="ghost"
+                  variant="sport-ghost"
                   size="icon"
                   onClick={handleEditClick}
                   className="h-8 w-8"
@@ -105,7 +113,7 @@ export default function TopicCard({ topic, onDelete, onUpdate, clickable = true 
                   <Pencil className="h-4 w-4" />
                 </Button>
                 <Button
-                  variant="ghost"
+                  variant="sport-ghost"
                   size="icon"
                   onClick={handleDeleteClick}
                   className="h-8 w-8 text-red-600 hover:text-red-700"

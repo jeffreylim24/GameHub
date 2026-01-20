@@ -73,7 +73,7 @@ export default function TopicCardEdit({ topic, onCancel, onUpdate }: TopicCardEd
   };
 
   return (
-    <Card>
+    <Card variant="sport" className="border-l-4 border-l-[var(--sport-orange)]">
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardHeader>
           <div className="flex items-start justify-between gap-4">
@@ -87,11 +87,12 @@ export default function TopicCardEdit({ topic, onCancel, onUpdate }: TopicCardEd
                   {...register('title')}
                   disabled={isSubmitting}
                   className="text-2xl font-semibold"
+                  variant="sport"
                 />
                 {errors.title && (
                   <p className="text-sm text-red-500">{errors.title.message}</p>
                 )}
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-[var(--sport-muted)]">
                   {title?.length || 0}/200 characters
                 </p>
               </div>
@@ -99,7 +100,7 @@ export default function TopicCardEdit({ topic, onCancel, onUpdate }: TopicCardEd
             <div className="flex gap-1">
               <Button
                 type="submit"
-                variant="ghost"
+                variant="sport-ghost"
                 size="icon"
                 disabled={isSubmitting}
                 className="h-8 w-8"
@@ -108,7 +109,7 @@ export default function TopicCardEdit({ topic, onCancel, onUpdate }: TopicCardEd
               </Button>
               <Button
                 type="button"
-                variant="ghost"
+                variant="sport-ghost"
                 size="icon"
                 onClick={handleCancelClick}
                 disabled={isSubmitting}
@@ -128,11 +129,12 @@ export default function TopicCardEdit({ topic, onCancel, onUpdate }: TopicCardEd
               maxLength={500}
               {...register('description')}
               disabled={isSubmitting}
+              variant="sport"
             />
             {errors.description && (
               <p className="text-sm text-red-500">{errors.description.message}</p>
             )}
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[var(--sport-muted)]">
               {description?.length || 0}/500 characters
             </p>
           </div>

@@ -52,7 +52,7 @@ export default function Login() {
 
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
-      <Card className="w-full max-w-md">
+      <Card variant="sport" className="w-full max-w-md border-l-4 border-l-[var(--sport-blue)]">
         <CardHeader>
           <CardTitle>Login</CardTitle>
           <CardDescription>
@@ -70,6 +70,7 @@ export default function Login() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 disabled={isLoading}
+                variant="sport"
               />
             </div>
 
@@ -82,6 +83,7 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
+                variant="sport"
               />
             </div>
 
@@ -91,13 +93,13 @@ export default function Login() {
               </Alert>
             )}
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full" disabled={isLoading} variant="sport">
               {isLoading ? 'Logging in...' : 'Login'}
             </Button>
 
-            <p className="text-sm text-center text-gray-600">
+            <p className="text-sm text-center text-[var(--sport-muted)]">
               Don't have an account?{' '}
-              <Link to="/signup" className="text-blue-600 hover:underline">
+              <Link to="/signup" className="text-[var(--sport-blue)] hover:text-[var(--sport-ink)]">
                 Sign up
               </Link>
             </p>

@@ -81,7 +81,7 @@ export default function CommentForm({ postId, onCommentAdded }: CommentFormProps
 
   if (!isAuthenticated) {
     return (
-      <Alert>
+      <Alert className="border-[var(--sport-border)] bg-[var(--sport-surface-2)]">
         <AlertDescription>
           Please log in to leave a comment.
         </AlertDescription>
@@ -90,7 +90,7 @@ export default function CommentForm({ postId, onCommentAdded }: CommentFormProps
   }
 
   return (
-    <Card>
+    <Card variant="sport" className="border-l-4 border-l-[var(--sport-red)]">
       <CardHeader>
         <CardTitle>Add a Comment</CardTitle>
       </CardHeader>
@@ -105,11 +105,12 @@ export default function CommentForm({ postId, onCommentAdded }: CommentFormProps
               disabled={isSubmitting}
               rows={4}
               maxLength={1000}
+              variant="sport"
             />
             {errors.content && (
               <p className="text-sm text-red-500">{errors.content.message}</p>
             )}
-            <p className="text-xs text-gray-500 text-right">
+            <p className="text-xs text-[var(--sport-muted)] text-right">
               {content?.length || 0}/1000 characters
             </p>
           </div>
@@ -131,7 +132,7 @@ export default function CommentForm({ postId, onCommentAdded }: CommentFormProps
             </Alert>
           )}
 
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={isSubmitting} variant="sport">
             {isSubmitting ? 'Posting...' : 'Post Comment'}
           </Button>
         </form>

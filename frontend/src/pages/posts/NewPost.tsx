@@ -155,7 +155,7 @@ export default function NewPost() {
   if (!isAuthenticated) {
     return (
       <div className="max-w-3xl mx-auto">
-        <Card>
+        <Card variant="sport" className="border-l-4 border-l-[var(--sport-red)]">
           <CardHeader>
             <CardTitle>Login Required</CardTitle>
             <CardDescription>
@@ -164,10 +164,12 @@ export default function NewPost() {
           </CardHeader>
           <CardContent>
             <div className="flex gap-3">
-              <Button variant="outline" onClick={() => navigate('/')}>
+              <Button variant="sport-outline" onClick={() => navigate('/')}>
                 Back to Home
               </Button>
-              <Button onClick={() => navigate('/login')}>Go to Login</Button>
+              <Button variant="sport" onClick={() => navigate('/login')}>
+                Go to Login
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -177,7 +179,7 @@ export default function NewPost() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <Card>
+      <Card variant="sport" className="border-l-4 border-l-[var(--sport-red)]">
         <CardHeader>
           <CardTitle>Create New Post</CardTitle>
           <CardDescription>
@@ -205,7 +207,7 @@ export default function NewPost() {
                     value={field.value}
                     disabled={isSubmitting || isLoadingTopics}
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full border-[var(--sport-border)] bg-[var(--sport-surface-2)]">
                       <SelectValue placeholder="Select a game topic..." />
                     </SelectTrigger>
                     {/* TODO: Add scroll for when there are too many topics */}
@@ -238,11 +240,12 @@ export default function NewPost() {
                 placeholder="e.g., Just finished the main story - thoughts?"
                 {...register('title')}
                 disabled={isSubmitting}
+                variant="sport"
               />
               {errors.title && (
                 <p className="text-sm text-red-500">{errors.title.message}</p>
               )}
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-[var(--sport-muted)]">
                 {title?.length || 0}/300 characters
               </p>
             </div>
@@ -258,11 +261,12 @@ export default function NewPost() {
                 maxLength={5000}
                 {...register('content')}
                 disabled={isSubmitting}
+                variant="sport"
               />
               {errors.content && (
                 <p className="text-sm text-red-500">{errors.content.message}</p>
               )}
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-[var(--sport-muted)]">
                 {content?.length || 0}/5000 characters
               </p>
             </div>
@@ -279,7 +283,7 @@ export default function NewPost() {
                       value={field.value || 'none'}
                       disabled={isSubmitting}
                     >
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className="w-full border-[var(--sport-border)] bg-[var(--sport-surface-2)]">
                         <SelectValue placeholder="Select a category..." />
                       </SelectTrigger>
                       <SelectContent>
@@ -306,7 +310,7 @@ export default function NewPost() {
                       value={field.value || 'none'}
                       disabled={isSubmitting}
                     >
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className="w-full border-[var(--sport-border)] bg-[var(--sport-surface-2)]">
                         <SelectValue placeholder="Select a platform..." />
                       </SelectTrigger>
                       <SelectContent>
@@ -347,13 +351,13 @@ export default function NewPost() {
             <div className="flex justify-end gap-3 pt-4">
               <Button
                 type="button"
-                variant="outline"
+                variant="sport-outline"
                 onClick={handleCancel}
                 disabled={isSubmitting}
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting} variant="sport">
                 {isSubmitting ? 'Creating...' : 'Create Post'}
               </Button>
             </div>

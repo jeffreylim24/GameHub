@@ -26,19 +26,22 @@ export default function PostCardListView({
   return (
     <SpoilerOverlay hasSpoilers={post.has_spoilers}>
       <Card
-        className="cursor-pointer hover:shadow-md transition-shadow"
+        variant="sport"
+        className="group cursor-pointer overflow-hidden border-l-4 border-l-[var(--sport-red)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_34px_-24px_rgba(11,15,20,0.8)]"
         onClick={handleClick}
       >
         <CardHeader>
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
-              <CardTitle className="text-xl">{post.title}</CardTitle>
-              <CardDescription className="mt-1">
+              <CardTitle className="text-xl font-semibold tracking-[0.04em] text-[var(--sport-ink)]">
+                {post.title}
+              </CardTitle>
+              <CardDescription className="mt-1 text-[var(--sport-muted)]">
                 in{' '}
                 <Link
                   to={`/topics/${post.topic_id}`}
                   onClick={handleLinkClick}
-                  className="font-semibold hover:underline"
+                  className="font-semibold text-[var(--sport-blue)] hover:text-[var(--sport-ink)]"
                 >
                   {post.topic?.title}
                 </Link>
@@ -48,12 +51,12 @@ export default function PostCardListView({
                   <Link
                     to={`/user/${post.author.user_id}`}
                     onClick={handleLinkClick}
-                    className="font-semibold hover:underline"
+                    className="font-semibold text-[var(--sport-blue)] hover:text-[var(--sport-ink)]"
                   >
                     {post.author.username}
                   </Link>
                 ) : (
-                  <strong>Anonymous</strong>
+                  <strong className="text-[var(--sport-ink)]">Anonymous</strong>
                 )}
                 {' • '}
                 {formatRelativeTime(post.created_at)}
@@ -61,10 +64,10 @@ export default function PostCardListView({
             </div>
             <div className="flex flex-col gap-1 items-end">
               {post.category && (
-                <Badge variant="secondary">{post.category}</Badge>
+                <Badge variant="sport">{post.category}</Badge>
               )}
               {post.platform && (
-                <Badge variant="outline">{post.platform}</Badge>
+                <Badge variant="sport-outline">{post.platform}</Badge>
               )}
               {post.has_spoilers && (
                 <Badge variant="destructive">Spoilers</Badge>
@@ -73,7 +76,7 @@ export default function PostCardListView({
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-600 line-clamp-2">
+          <p className="text-sm text-[var(--sport-ink-2)] opacity-80 line-clamp-2">
             {post.content}
           </p>
         </CardContent>

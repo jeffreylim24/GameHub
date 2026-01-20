@@ -24,21 +24,21 @@ export default function CommentCardDetailView({
 
   return (
     <SpoilerOverlay hasSpoilers={comment.has_spoilers}>
-      <Card>
+      <Card variant="sport" className="border-l-4 border-l-[var(--sport-blue)]">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               {comment.author?.username ? (
                 <Link
                   to={`/user/${comment.author.user_id}`}
-                  className="font-semibold hover:underline"
+                  className="font-semibold text-[var(--sport-blue)] hover:text-[var(--sport-ink)]"
                 >
                   {comment.author.username}
                 </Link>
               ) : (
-                <span className="font-semibold">Anonymous</span>
+                <span className="font-semibold text-[var(--sport-ink)]">Anonymous</span>
               )}
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-[var(--sport-muted)]">
                 {formatRelativeTime(comment.created_at)}
               </span>
             </div>
@@ -49,7 +49,7 @@ export default function CommentCardDetailView({
               {isAuthor && (
                 <>
                   <Button
-                    variant="ghost"
+                    variant="sport-ghost"
                     size="icon"
                     onClick={onEditClick}
                     className="h-8 w-8"
@@ -57,7 +57,7 @@ export default function CommentCardDetailView({
                     <Edit2 className="h-4 w-4" />
                   </Button>
                   <Button
-                    variant="ghost"
+                    variant="sport-ghost"
                     size="icon"
                     onClick={onDeleteClick}
                     className="h-8 w-8"
@@ -70,7 +70,7 @@ export default function CommentCardDetailView({
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-gray-700 whitespace-pre-wrap">{comment.content}</p>
+          <p className="text-[var(--sport-ink-2)] whitespace-pre-wrap">{comment.content}</p>
         </CardContent>
       </Card>
     </SpoilerOverlay>

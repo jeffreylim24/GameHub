@@ -68,7 +68,7 @@ export default function CommentCardEdit({ comment, onCancel, onUpdate }: Comment
   };
 
   return (
-    <Card>
+    <Card variant="sport" className="border-l-4 border-l-[var(--sport-blue)]">
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -82,7 +82,7 @@ export default function CommentCardEdit({ comment, onCancel, onUpdate }: Comment
             <div className="flex gap-1">
               <Button
                 type="submit"
-                variant="ghost"
+                variant="sport-ghost"
                 size="icon"
                 disabled={isSubmitting}
                 className="h-8 w-8"
@@ -91,7 +91,7 @@ export default function CommentCardEdit({ comment, onCancel, onUpdate }: Comment
               </Button>
               <Button
                 type="button"
-                variant="ghost"
+                variant="sport-ghost"
                 size="icon"
                 onClick={handleCancelClick}
                 disabled={isSubmitting}
@@ -113,11 +113,12 @@ export default function CommentCardEdit({ comment, onCancel, onUpdate }: Comment
               maxLength={1000}
               {...register('content')}
               disabled={isSubmitting}
+              variant="sport"
             />
             {errors.content && (
               <p className="text-sm text-red-500">{errors.content.message}</p>
             )}
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[var(--sport-muted)]">
               {content?.length || 0}/1000 characters
             </p>
           </div>

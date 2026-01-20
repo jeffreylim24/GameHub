@@ -19,6 +19,12 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
+        sport:
+          "border border-transparent bg-[linear-gradient(135deg,var(--sport-red),var(--sport-orange))] text-[var(--sport-ink)] shadow-[0_18px_32px_-24px_rgba(20,18,36,0.8)] font-semibold tracking-[0.12em] hover:shadow-[0_22px_34px_-24px_rgba(20,18,36,0.85)] motion-safe:hover:-translate-y-0.5",
+        "sport-outline":
+          "border border-[var(--sport-red)] text-[var(--sport-red)] bg-transparent tracking-[0.14em] hover:bg-[var(--sport-red)]/10 hover:text-[var(--sport-red)]",
+        "sport-ghost":
+          "text-[var(--sport-ink)] hover:bg-[var(--sport-blue)]/10 hover:text-[var(--sport-blue)]",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
