@@ -1,3 +1,11 @@
+/**
+ * Sticky footer placeholder for secondary actions.
+ *
+ * @example
+ * ```tsx
+ * <Footer />
+ * ```
+ */
 export default function Footer() {
   return (
     <footer className="sticky bottom-0 z-50 border-t border-[var(--sport-border)] bg-[var(--sport-surface-2)] py-4 text-center text-xs uppercase tracking-[0.25em] text-[var(--sport-muted)]">

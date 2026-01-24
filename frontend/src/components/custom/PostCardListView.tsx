@@ -10,6 +10,14 @@ interface PostCardListViewProps {
   post: Post;
 }
 
+/**
+ * Compact post card for list views with quick metadata and spoiler masking.
+ *
+ * @example
+ * ```tsx
+ * <PostCardListView post={post} />
+ * ```
+ */
 export default function PostCardListView({
   post,
 }: PostCardListViewProps) {

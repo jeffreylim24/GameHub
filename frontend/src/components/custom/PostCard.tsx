@@ -24,6 +24,17 @@ interface PostCardProps {
   variant?: 'list' | 'detail';
 }
 
+/**
+ * Post container that switches between list, detail, and edit views.
+ *
+ * @remarks
+ * Edit/delete actions are gated by author or admin permissions.
+ *
+ * @example
+ * ```tsx
+ * <PostCard post={post} variant="list" onUpdate={handleUpdate} />
+ * ```
+ */
 export default function PostCard({ post, onDelete, onUpdate, variant = 'list' }: PostCardProps) {
   const { currentUserId, isAdmin } = useAuth();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);

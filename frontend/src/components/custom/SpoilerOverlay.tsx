@@ -8,6 +8,16 @@ interface SpoilerOverlayProps {
   children: React.ReactNode;
 }
 
+/**
+ * Masks spoiler content until the user explicitly reveals it.
+ *
+ * @example
+ * ```tsx
+ * <SpoilerOverlay hasSpoilers={post.has_spoilers}>
+ *   <PostBody />
+ * </SpoilerOverlay>
+ * ```
+ */
 export function SpoilerOverlay({ hasSpoilers, children }: SpoilerOverlayProps) {
   const [isRevealed, setIsRevealed] = useState(false);
 

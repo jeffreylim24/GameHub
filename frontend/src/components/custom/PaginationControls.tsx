@@ -12,6 +12,14 @@ interface PaginationControlsProps {
   onPageChange: (page: number) => void;
 }
 
+/**
+ * Pagination controls for paged lists.
+ *
+ * @example
+ * ```tsx
+ * <PaginationControls pagination={pagination} onPageChange={setPage} />
+ * ```
+ */
 export default function PaginationControls({
   pagination,
   onPageChange,

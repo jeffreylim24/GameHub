@@ -75,6 +75,7 @@ export const updateUser = async (
 /**
  * Deletes a user.
  * @param id - User ID
+ * @returns Promise resolving when the user is deleted
  * @throws {AxiosError} On network errors or if user not found (404)
  */
 export const deleteUser = async (id: number): Promise<void> => {

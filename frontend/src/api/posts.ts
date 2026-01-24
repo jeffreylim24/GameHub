@@ -75,6 +75,7 @@ export const updatePost = async (
 /**
  * Deletes a post.
  * @param id - Post ID
+ * @returns Promise resolving when the post is deleted
  * @throws {AxiosError} On network errors or if post not found (404)
  */
 export const deletePost = async (id: number): Promise<void> => {

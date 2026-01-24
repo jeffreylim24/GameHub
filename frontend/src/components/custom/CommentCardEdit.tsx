@@ -29,6 +29,14 @@ interface CommentCardEditProps {
   onUpdate: (updatedComment: Comment) => void;
 }
 
+/**
+ * Inline edit form for comment content and spoiler flag.
+ *
+ * @example
+ * ```tsx
+ * <CommentCardEdit comment={comment} onCancel={handleCancel} onUpdate={handleUpdate} />
+ * ```
+ */
 export default function CommentCardEdit({ comment, onCancel, onUpdate }: CommentCardEditProps) {
   const {
     register,

@@ -76,6 +76,7 @@ export const updateTopic = async (
 /**
  * Deletes a topic.
  * @param id - Topic ID
+ * @returns Promise resolving when the topic is deleted
  * @throws {AxiosError} On network errors or if topic not found (404)
  */
 export const deleteTopic = async (id: number): Promise<void> => {

@@ -2,6 +2,14 @@ import { Link } from 'react-router-dom';
 import Navigation from './Navigation';
 import AuthSection from './AuthSection';
 
+/**
+ * Top navigation bar with brand, primary navigation, and auth actions.
+ *
+ * @example
+ * ```tsx
+ * <Navbar />
+ * ```
+ */
 export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-black/10 bg-[linear-gradient(90deg,#141224_0%,#1a1f33_100%)] text-white shadow-[0_10px_30px_-22px_rgba(20,18,36,0.7)]">

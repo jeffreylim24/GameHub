@@ -10,6 +10,17 @@ interface CommentCardListViewProps {
   comment: Comment;
 }
 
+/**
+ * Compact comment card for list views with navigation to the post.
+ *
+ * @remarks
+ * Clicking the card navigates to the parent post while links stop propagation.
+ *
+ * @example
+ * ```tsx
+ * <CommentCardListView comment={comment} />
+ * ```
+ */
 export default function CommentCardListView({
   comment,
 }: CommentCardListViewProps) {

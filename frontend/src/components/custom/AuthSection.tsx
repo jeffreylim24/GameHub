@@ -3,6 +3,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { LogOut, User } from 'lucide-react';
 
+/**
+ * Header auth controls that swap between login/signup and profile/logout.
+ *
+ * @example
+ * ```tsx
+ * <AuthSection />
+ * ```
+ */
 export default function AuthSection() {
   const { isAuthenticated, currentUserId, logout } = useAuth();
   const navigate = useNavigate();
