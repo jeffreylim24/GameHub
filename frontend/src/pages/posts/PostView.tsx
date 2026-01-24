@@ -9,6 +9,14 @@ import CommentForm from '@/components/custom/CommentForm';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 
+/**
+ * Post detail page with comment thread and author actions.
+ *
+ * @example
+ * ```tsx
+ * <PostView />
+ * ```
+ */
 export default function PostView() {
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();

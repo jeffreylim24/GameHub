@@ -8,6 +8,14 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
+/**
+ * Login page for existing users.
+ *
+ * @example
+ * ```tsx
+ * <Login />
+ * ```
+ */
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');

@@ -1,12 +1,13 @@
 /**
- * Configured Axios instance for GameHub API requests.
+ * @fileoverview Configured Axios instance for GameHub API requests.
  *
- * @module
+ * @module lib/axios
  */
 
 import axios from 'axios';
 import { API_BASE_URL, API_TIMEOUT_MS, IS_DEV } from './constants';
 
+/** Shared Axios instance configured with base URL and interceptors. */
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: {

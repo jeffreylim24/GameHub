@@ -64,6 +64,14 @@ const createPostSchema = z.object({
 
 type CreatePostFormData = z.infer<typeof createPostSchema>;
 
+/**
+ * Create post page with validation and topic selection.
+ *
+ * @example
+ * ```tsx
+ * <NewPost />
+ * ```
+ */
 export default function NewPost() {
   const [searchParams] = useSearchParams();
   const topicIdFromQuery = searchParams.get('topicId');
@@ -210,7 +218,7 @@ export default function NewPost() {
                     <SelectTrigger className="w-full border-[var(--sport-border)] bg-[var(--sport-surface-2)]">
                       <SelectValue placeholder="Select a game topic..." />
                     </SelectTrigger>
-                    {/* TODO: Add scroll for when there are too many topics */}
+                    {/* @TODO: Add scroll for long topic lists - GAMEHUB-203 */}
                     <SelectContent>
                       {topics.map((topic) => (
                         <SelectItem

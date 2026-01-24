@@ -7,6 +7,11 @@ import { useState, useEffect } from 'react';
  * @param value - The value to debounce
  * @param delay - Delay in milliseconds (default: 500ms)
  * @returns The debounced value
+ *
+ * @example
+ * ```tsx
+ * const debouncedQuery = useDebounce(query, 300);
+ * ```
  */
 export function useDebounce<T>(value: T, delay: number = 500): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);

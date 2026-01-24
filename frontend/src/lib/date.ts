@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Date formatting helpers for UI display.
+ *
+ * @module lib/date
+ */
+
 import { formatDistanceToNow, format } from 'date-fns';
 
 /**
@@ -6,6 +12,11 @@ import { formatDistanceToNow, format } from 'date-fns';
  *
  * @param dateString - ISO date string to format
  * @returns Formatted relative time string
+ *
+ * @example
+ * ```ts
+ * formatRelativeTime('2025-01-15T14:30:00Z');
+ * ```
  */
 export function formatRelativeTime(dateString: string): string {
   const date = new Date(dateString);
@@ -17,6 +28,11 @@ export function formatRelativeTime(dateString: string): string {
  *
  * @param dateString - ISO date string to format
  * @returns Formatted absolute date string
+ *
+ * @example
+ * ```ts
+ * formatAbsoluteDate('2025-01-15T14:30:00Z');
+ * ```
  */
 export function formatAbsoluteDate(dateString: string): string {
   const date = new Date(dateString);
@@ -28,6 +44,11 @@ export function formatAbsoluteDate(dateString: string): string {
  *
  * @param dateString - ISO date string to format
  * @returns Formatted long date string
+ *
+ * @example
+ * ```ts
+ * formatLongDate('2025-01-15T14:30:00Z');
+ * ```
  */
 export function formatLongDate(dateString: string): string {
   const date = new Date(dateString);
@@ -39,6 +60,11 @@ export function formatLongDate(dateString: string): string {
  *
  * @param dateString - ISO date string to format
  * @returns Formatted join date string
+ *
+ * @example
+ * ```ts
+ * formatJoinDate('2025-01-15T14:30:00Z');
+ * ```
  */
 export function formatJoinDate(dateString: string): string {
   const date = new Date(dateString);

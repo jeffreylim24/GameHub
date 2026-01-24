@@ -9,6 +9,14 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
+/**
+ * Topics index page with search, pagination, and create topic dialog.
+ *
+ * @example
+ * ```tsx
+ * <Topics />
+ * ```
+ */
 export default function Topics() {
   const [topics, setTopics] = useState<Topic[]>([]);
   const [pagination, setPagination] = useState<PaginationMetadata | null>(null);
