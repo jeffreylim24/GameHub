@@ -1,6 +1,10 @@
+// Package validation provides input validation helpers and error messages.
 package validation
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // User validation constants
 const (
@@ -18,7 +22,6 @@ var (
 	ErrPasswordRequired  = "Password is required"
 	ErrPasswordMinLength = fmt.Sprintf("Password must be at least %d characters long", PasswordMinLength)
 	ErrPasswordMaxLength = fmt.Sprintf("Password must not exceed %d characters", PasswordMaxLength)
-	ErrInvalidRole       = "Invalid role. Must be 'user' or 'admin'" // TODO: Extract valid roles into constant
 )
 
 // Topic validation constants
@@ -52,8 +55,8 @@ var (
 	ErrPostContentRequired  = "Post content cannot be empty."
 	ErrPostContentMinLength = fmt.Sprintf("Post content must be at least %d characters long.", PostContentMinLength)
 	ErrPostContentMaxLength = fmt.Sprintf("Post content cannot exceed %d characters.", PostContentMaxLength)
-	ErrPostCategoryInvalid  = "Invalid post category. Allowed categories are: Discussion, Question, Review, Highlight, Tips."
-	ErrPostPlatformInvalid  = "Invalid post platform. Allowed platforms are: PC, PlayStation, Xbox, Nintendo Switch."
+	ErrPostCategoryInvalid  = fmt.Sprintf("Invalid post category. Allowed categories are: %s.", formatAllowedValues(AllowedPostCategories))
+	ErrPostPlatformInvalid  = fmt.Sprintf("Invalid post platform. Allowed platforms are: %s.", formatAllowedValues(AllowedPostPlatforms))
 )
 
 // Allowed post categories
@@ -61,6 +64,18 @@ var AllowedPostCategories = []string{"", "Discussion", "Question", "Review", "Hi
 
 // Allowed post platforms
 var AllowedPostPlatforms = []string{"", "PC", "PlayStation", "Xbox", "Nintendo Switch"}
+
+// formatAllowedValues formats a slice of strings into a comma-separated string, excluding empty values.
+func formatAllowedValues(values []string) string {
+	filtered := make([]string, 0, len(values))
+	for _, value := range values {
+		if value == "" {
+			continue
+		}
+		filtered = append(filtered, value)
+	}
+	return strings.Join(filtered, ", ")
+}
 
 // Comment validation constants
 const (

@@ -1,3 +1,4 @@
+// Package routes wires HTTP routes and middleware for the API.
 package routes
 
 import (
@@ -14,9 +15,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// Retrieves and parses the CORS_ALLOWED_ORIGINS environment variable.
-// Returns a slice of allowed origins. Supports comma-separated values.
-// Falls back to "http://localhost:5173" if the environment variable is empty or not set.
+// getCORSAllowedOrigins parses CORS_ALLOWED_ORIGINS into a slice of origins.
+// Supports comma-separated values and falls back to "http://localhost:5173".
 func getCORSAllowedOrigins() []string {
 	originsEnv := os.Getenv("CORS_ALLOWED_ORIGINS")
 
@@ -40,7 +40,7 @@ func getCORSAllowedOrigins() []string {
 	return trimmedOrigins
 }
 
-// Sets up the router with all routes and middleware
+// SetupRouter sets up the router with all routes and middleware.
 func SetupRouter(db *gorm.DB) http.Handler {
 	r := chi.NewRouter()
 

@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// Comment represents a reply to a post
+// Comment represents a reply to a post.
 type Comment struct {
 	CommentID   uint      `gorm:"primaryKey;autoIncrement" json:"comment_id"`
 	PostID      uint      `gorm:"not null;index" json:"post_id"`

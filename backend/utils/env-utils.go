@@ -1,3 +1,4 @@
+// Package utils provides environment and authentication helpers.
 package utils
 
 import (
@@ -7,7 +8,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// LoadEnv loads environment variables from .env file
+// LoadEnv loads environment variables from a .env file.
 func LoadEnv() {
 	err := godotenv.Load()
 	if err != nil {
@@ -15,7 +16,7 @@ func LoadEnv() {
 	}
 }
 
-// GetEnv retrieves an environment variable or returns a fallback value
+// GetEnv retrieves an environment variable or returns a fallback value.
 func GetEnv(key, fallback string) string {
 	if value := os.Getenv(key); value != "" {
 		return value
@@ -23,7 +24,7 @@ func GetEnv(key, fallback string) string {
 	return fallback
 }
 
-// ValidateJWTEnv validates that required JWT environment variables are set
+// ValidateJWTEnv validates that required JWT environment variables are set.
 func ValidateJWTEnv() {
 	jwtSecret := os.Getenv("JWT_SECRET")
 	if jwtSecret == "" {

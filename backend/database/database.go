@@ -1,3 +1,4 @@
+// Package database provides PostgreSQL connection and migration helpers.
 package database
 
 import (
@@ -10,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// Establishes a connection to the PostgreSQL database
+// Connect opens a PostgreSQL connection using DATABASE_URL or DB_* variables.
 func Connect() *gorm.DB {
 	var dsn string
 
@@ -49,7 +50,7 @@ func Connect() *gorm.DB {
 	return db
 }
 
-// Migrates the provided models to the database
+// Migrate runs AutoMigrate for the provided models and logs progress.
 func Migrate(db *gorm.DB, models ...interface{}) {
 	for _, model := range models {
 		log.Printf("Migrating: %T", model)

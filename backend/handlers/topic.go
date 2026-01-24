@@ -66,7 +66,7 @@ func (h *TopicHandler) CreateTopic(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetTopics returns paginated topics sorted by newest first.
-// Supports optional search filter (title contains).
+// Query params: page, page_size, search (title contains).
 func (h *TopicHandler) GetTopics(w http.ResponseWriter, r *http.Request) {
 	params := pagination.ParseParams(r)
 

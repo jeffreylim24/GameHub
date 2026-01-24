@@ -80,6 +80,7 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetComments returns paginated comments with optional filters, sorted by oldest first.
+// Query params: page, page_size, post_id, author_id.
 func (h *CommentHandler) GetComments(w http.ResponseWriter, r *http.Request) {
 	params := pagination.ParseParams(r)
 

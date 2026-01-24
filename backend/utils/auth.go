@@ -10,6 +10,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Claims represents JWT claims for an authenticated user.
 type Claims struct {
 	UserID   uint   `json:"user_id"`
 	Username string `json:"username"`
@@ -17,7 +18,7 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-// Hashes a plain text password using bcrypt
+// HashPassword hashes a plain text password using bcrypt.
 func HashPassword(password string) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
@@ -26,12 +27,12 @@ func HashPassword(password string) (string, error) {
 	return string(hashedPassword), nil
 }
 
-// Compares a plain text password with a hashed password
+// CheckPassword compares a plain text password with a hashed password.
 func CheckPassword(hashedPassword, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
-// Creates a new JWT token for a user
+// GenerateJWT creates a signed JWT token for a user.
 func GenerateJWT(userID uint, username, role string) (string, error) {
 	jwtSecret := os.Getenv("JWT_SECRET")
 
@@ -63,7 +64,7 @@ func GenerateJWT(userID uint, username, role string) (string, error) {
 	return tokenString, nil
 }
 
-// ValidateJWT validates a JWT token and returns the claims
+// ValidateJWT validates a JWT token and returns the claims.
 func ValidateJWT(tokenString string) (*Claims, error) {
 	jwtSecret := os.Getenv("JWT_SECRET")
 

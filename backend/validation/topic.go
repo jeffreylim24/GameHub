@@ -2,8 +2,7 @@ package validation
 
 import "strings"
 
-// Checks if a title is valid
-// Returns an error message if invalid, empty string if valid
+// ValidateTopicTitle returns an error message if the title is invalid.
 func ValidateTopicTitle(title string) string {
 	title = strings.TrimSpace(title)
 	if len(title) == 0 {
@@ -19,8 +18,7 @@ func ValidateTopicTitle(title string) string {
 	return ""
 }
 
-// Checks if a description is valid
-// Returns an error message if invalid, empty string if valid
+// ValidateTopicDescription returns an error message if the description is invalid.
 func ValidateTopicDescription(description string) string {
 	description = strings.TrimSpace(description)
 	if len(description) > TopicDescriptionMaxLength {

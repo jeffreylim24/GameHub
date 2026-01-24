@@ -2,8 +2,7 @@ package validation
 
 import "strings"
 
-// Checks if the post title is valid
-// Returns an error message if invalid, empty string if valid
+// ValidatePostTitle returns an error message if the post title is invalid.
 func ValidatePostTitle(title string) string {
 	title = strings.TrimSpace(title)
 	if len(title) == 0 {
@@ -18,8 +17,7 @@ func ValidatePostTitle(title string) string {
 	return ""
 }
 
-// Checks if the post content is valid
-// Returns an error message if invalid, empty string if valid
+// ValidatePostContent returns an error message if the post content is invalid.
 func ValidatePostContent(content string) string {
 	content = strings.TrimSpace(content)
 	if len(content) == 0 {
@@ -34,8 +32,7 @@ func ValidatePostContent(content string) string {
 	return ""
 }
 
-// Validates the post category against allowed categories
-// Returns an error message if invalid, empty string if valid
+// ValidatePostCategory returns an error message if the post category is invalid.
 func ValidatePostCategory(category string) string {
 	category = strings.TrimSpace(category)
 	for _, c := range AllowedPostCategories {
@@ -46,8 +43,7 @@ func ValidatePostCategory(category string) string {
 	return ErrPostCategoryInvalid
 }
 
-// Validates the post platform against allowed platforms
-// Returns an error message if invalid, empty string if valid
+// ValidatePostPlatform returns an error message if the post platform is invalid.
 func ValidatePostPlatform(platform string) string {
 	platform = strings.TrimSpace(platform)
 	for _, p := range AllowedPostPlatforms {
