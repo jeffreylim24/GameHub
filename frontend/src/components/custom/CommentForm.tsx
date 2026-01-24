@@ -27,6 +27,14 @@ const commentSchema = z.object({
 
 type CommentFormData = z.infer<typeof commentSchema>;
 
+/**
+ * Auth-gated form for adding a comment to a post.
+ *
+ * @example
+ * ```tsx
+ * <CommentForm postId={postId} onCommentAdded={handleAdd} />
+ * ```
+ */
 export default function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
   const { isAuthenticated, currentUserId } = useAuth();
   const [error, setError] = useState('');

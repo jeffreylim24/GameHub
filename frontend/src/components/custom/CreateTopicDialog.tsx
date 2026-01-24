@@ -40,6 +40,14 @@ interface CreateTopicDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+/**
+ * Dialog that creates a new topic; prompts login if unauthenticated.
+ *
+ * @example
+ * ```tsx
+ * <CreateTopicDialog open={isOpen} onOpenChange={setIsOpen} />
+ * ```
+ */
 export default function CreateTopicDialog({
   open,
   onOpenChange,

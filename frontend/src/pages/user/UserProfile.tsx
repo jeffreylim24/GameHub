@@ -24,7 +24,15 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { formatJoinDate } from '@/lib/date';
 
-// TODO: Implement pagination for posts and comments if needed
+// @TODO: Implement pagination for posts and comments if needed
+/**
+ * User profile page with posts/comments tabs and account deletion.
+ *
+ * @example
+ * ```tsx
+ * <UserProfile />
+ * ```
+ */
 export default function UserProfile() {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();

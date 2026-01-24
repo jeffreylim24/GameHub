@@ -2,8 +2,7 @@ package validation
 
 import "strings"
 
-// Checks if the comment content is valid
-// Returns an error message string if invalid, or an empty string if valid
+// ValidateCommentContent returns an error message if the comment content is invalid.
 func ValidateCommentContent(content string) string {
 	content = strings.TrimSpace(content)
 	if len(content) == 0 {

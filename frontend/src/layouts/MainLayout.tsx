@@ -1,10 +1,19 @@
 import Navbar from '@/components/custom/Navbar';
-// import Footer from '@/components/custom/Footer';
 
 interface MainLayoutProps {
   children: React.ReactNode;
 }
 
+/**
+ * Page layout with global navigation and background treatment.
+ *
+ * @example
+ * ```tsx
+ * <MainLayout>
+ *   <HomePage />
+ * </MainLayout>
+ * ```
+ */
 export default function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col bg-[var(--sport-surface)] text-[var(--sport-ink)]">
@@ -20,7 +29,6 @@ export default function MainLayout({ children }: MainLayoutProps) {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8 lg:px-8">
         {children}
       </main>
-      {/* <Footer /> */}
     </div>
   );
 }

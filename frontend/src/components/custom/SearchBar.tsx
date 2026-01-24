@@ -9,6 +9,14 @@ interface SearchBarProps {
   className?: string;
 }
 
+/**
+ * Controlled search input with an inline clear button.
+ *
+ * @example
+ * ```tsx
+ * <SearchBar value={query} onChange={setQuery} placeholder="Search topics" />
+ * ```
+ */
 export default function SearchBar({
   value,
   onChange,

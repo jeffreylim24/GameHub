@@ -26,6 +26,17 @@ interface TopicCardProps {
   clickable?: boolean;
 }
 
+/**
+ * Topic summary card with optional admin edit/delete actions.
+ *
+ * @remarks
+ * When `clickable` is true, clicking navigates to the topic page.
+ *
+ * @example
+ * ```tsx
+ * <TopicCard topic={topic} onUpdate={handleUpdate} onDelete={handleDelete} />
+ * ```
+ */
 export default function TopicCard({ topic, onDelete, onUpdate, clickable = true }: TopicCardProps) {
   const navigate = useNavigate();
   const { isAdmin } = useAuth();

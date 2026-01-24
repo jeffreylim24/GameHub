@@ -25,6 +25,7 @@ func NewUserHandler(db *gorm.DB) *UserHandler {
 }
 
 // GetUsers returns paginated users.
+// Query params: page, page_size.
 func (h *UserHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	params := pagination.ParseParams(r)
 

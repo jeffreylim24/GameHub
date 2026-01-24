@@ -26,6 +26,13 @@ const TOKEN_STORAGE_KEY = 'gamehub_token';
 
 /**
  * AuthProvider component that wraps the app and provides auth state.
+ *
+ * @example
+ * ```tsx
+ * <AuthProvider>
+ *   <App />
+ * </AuthProvider>
+ * ```
  */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -86,6 +93,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 /**
  * Hook to access auth context.
  * Must be used within an AuthProvider.
+ *
+ * @example
+ * ```tsx
+ * const { currentUser, login, logout } = useAuth();
+ * ```
  *
  * @throws {Error} If used outside AuthProvider
  */

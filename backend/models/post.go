@@ -4,8 +4,8 @@ import (
 	"time"
 )
 
-// Post represents a discussion post within a topic (game)
-// For now, can only contain text content. Future versions may support media attachments.
+// Post represents a discussion post within a topic (game).
+// For now, posts only contain text content; future versions may support media attachments.
 type Post struct {
 	PostID      uint      `gorm:"primaryKey;autoIncrement" json:"post_id"`
 	TopicID     uint      `gorm:"not null;index" json:"topic_id"`

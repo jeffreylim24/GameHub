@@ -1,3 +1,4 @@
+// A utility script to hash a password using bcrypt.
 package main
 
 import (

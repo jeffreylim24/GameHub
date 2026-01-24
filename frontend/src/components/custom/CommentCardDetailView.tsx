@@ -15,6 +15,19 @@ interface CommentCardDetailViewProps {
   onEditClick: (event: MouseEvent<HTMLButtonElement>) => void;
 }
 
+/**
+ * Full comment view with metadata and optional edit/delete actions.
+ *
+ * @example
+ * ```tsx
+ * <CommentCardDetailView
+ *   comment={comment}
+ *   isAuthor={isAuthor}
+ *   onEditClick={handleEdit}
+ *   onDeleteClick={handleDelete}
+ * />
+ * ```
+ */
 export default function CommentCardDetailView({
   comment,
   isAuthor,

@@ -90,7 +90,7 @@ func (h *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetPosts returns paginated posts with optional filters.
-// Supports filters: topic_id, category, platform, author_id, search (title contains).
+// Query params: page, page_size, topic_id, category, platform, author_id, search (title contains).
 func (h *PostHandler) GetPosts(w http.ResponseWriter, r *http.Request) {
 	params := pagination.ParseParams(r)
 

@@ -4,8 +4,7 @@ import (
 	"strings"
 )
 
-// Checks if a username is valid
-// Returns an error message if invalid, empty string if valid
+// ValidateUsername returns an error message if the username is invalid.
 func ValidateUsername(username string) string {
 	username = strings.TrimSpace(username)
 	if len(username) == 0 {
@@ -21,8 +20,7 @@ func ValidateUsername(username string) string {
 	return ""
 }
 
-// Checks if a password is valid
-// Returns an error message if invalid, empty string if valid
+// ValidatePassword returns an error message if the password is invalid.
 func ValidatePassword(password string) string {
 	if len(password) == 0 {
 		return ErrPasswordRequired

@@ -60,6 +60,14 @@ interface PostCardEditProps {
   onUpdate: (updatedPost: Post) => void;
 }
 
+/**
+ * Inline edit form for a post, with validation and save/cancel actions.
+ *
+ * @example
+ * ```tsx
+ * <PostCardEdit post={post} onCancel={handleCancel} onUpdate={handleUpdate} />
+ * ```
+ */
 export default function PostCardEdit({ post, onCancel, onUpdate }: PostCardEditProps) {
   const {
     register,

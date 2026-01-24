@@ -78,6 +78,7 @@ export const updateComment = async (
 /**
  * Deletes a comment.
  * @param id - Comment ID
+ * @returns Promise resolving when the comment is deleted
  * @throws {AxiosError} On network errors or if comment not found (404)
  */
 export const deleteComment = async (id: number): Promise<void> => {

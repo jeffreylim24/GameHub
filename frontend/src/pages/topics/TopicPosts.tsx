@@ -11,7 +11,15 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
-// TODO: Infinite scroll but find way to optimize performance for large number of posts
+// @TODO: Add infinite scroll but find way to optimize performance for large number of posts.
+/**
+ * Topic detail page with post feed, search, and creation entry points.
+ *
+ * @example
+ * ```tsx
+ * <TopicPosts />
+ * ```
+ */
 export default function TopicPosts() {
   const { topicId } = useParams<{ topicId: string }>();
   const navigate = useNavigate();

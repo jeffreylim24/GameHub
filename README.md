@@ -123,3 +123,4 @@ A: You must be logged in to create, edit, or delete content.
 4. I used AI to generate a seed script to populate my database with sample data for ease of development of my frontend.
 5. I used AI to help me scour through areas where I might have missed out documentation like GoDoc and JSDoc comments.
 6. I used AI to review my PRs to help me identify gaps that I have missed out.
+7. I used AI to help me research and summarise documentation conventions for Go and Javascript/Typescript so that I could reference it when writing documentation.

@@ -32,6 +32,14 @@ const signupSchema = z.object({
 
 type SignupFormData = z.infer<typeof signupSchema>;
 
+/**
+ * Signup page for new user registration.
+ *
+ * @example
+ * ```tsx
+ * <Signup />
+ * ```
+ */
 export default function Signup() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);

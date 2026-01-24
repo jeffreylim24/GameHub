@@ -7,6 +7,14 @@ import SearchBar from '@/components/custom/SearchBar';
 import { useDebounce } from '@/hooks/useDebounce';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
+/**
+ * Landing page showing the global post feed with search and pagination.
+ *
+ * @example
+ * ```tsx
+ * <Home />
+ * ```
+ */
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [pagination, setPagination] = useState<PaginationMetadata | null>(null);

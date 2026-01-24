@@ -14,6 +14,22 @@ interface PostCardDetailViewProps {
   onDeleteClick: (event: MouseEvent<HTMLButtonElement>) => void;
 }
 
+/**
+ * Detailed post card with metadata and optional edit/delete actions.
+ *
+ * @remarks
+ * Action buttons render only when `isAuthor` is true.
+ *
+ * @example
+ * ```tsx
+ * <PostCardDetailView
+ *   post={post}
+ *   isAuthor={isAuthor}
+ *   onEditClick={handleEdit}
+ *   onDeleteClick={handleDelete}
+ * />
+ * ```
+ */
 export default function PostCardDetailView({
   post,
   isAuthor,

@@ -24,6 +24,22 @@ interface CommentCardProps {
   variant?: 'list' | 'detail';
 }
 
+/**
+ * Comment container that switches between list, detail, and edit views.
+ *
+ * @remarks
+ * Edit/delete actions are gated by author or admin permissions.
+ *
+ * @example
+ * ```tsx
+ * <CommentCard
+ *   comment={comment}
+ *   variant="detail"
+ *   onUpdate={handleUpdate}
+ *   onDelete={handleDelete}
+ * />
+ * ```
+ */
 export default function CommentCard({ comment, onDelete, onUpdate, variant = 'detail' }: CommentCardProps) {
   const { currentUserId, isAdmin } = useAuth();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);

@@ -1,3 +1,4 @@
+// Clear all data from the database tables.
 package main
 
 import (

@@ -34,6 +34,14 @@ interface TopicCardEditProps {
   onUpdate: (updatedTopic: Topic) => void;
 }
 
+/**
+ * Inline edit form for a topic title and description.
+ *
+ * @example
+ * ```tsx
+ * <TopicCardEdit topic={topic} onCancel={handleCancel} onUpdate={handleUpdate} />
+ * ```
+ */
 export default function TopicCardEdit({ topic, onCancel, onUpdate }: TopicCardEditProps) {
   const {
     register,

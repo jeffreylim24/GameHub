@@ -1,3 +1,4 @@
+// A utility script to seed the database with sample data for development and testing.
 package main
 
 import (
